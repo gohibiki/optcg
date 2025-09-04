@@ -357,7 +357,7 @@
         async function loadCards() {
             const statusEl = document.getElementById('status');
             try {
-                const response = await fetch('https://corsproxy.io/?https://api.dotgg.gg/cgfw/getcards?game=onepiece&mode=indexed&cache=6360');
+                const response = await fetch('/api/get-cards');
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 
