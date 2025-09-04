@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0 20px 20px 20px; /* Removed top margin */
             background: #f5f5ff;
             color: #333;
         }
@@ -16,6 +16,40 @@
             max-width: 1200px;
             margin: 0 auto;
         }
+
+        /* --- Navigation Menu Styles --- */
+        .main-nav {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px; 
+            padding: 10px 0px;
+            /* The incorrect margin-top that created the gap has been removed. */
+        }
+
+        .main-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start; /* Aligned to the left */
+        }
+
+        .main-nav li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 10px 15px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+
+        .main-nav li a:hover, .main-nav li a.active {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
 
         h1 {
             text-align: center;
@@ -237,6 +271,13 @@
 </head>
 <body class="gallery-mode">
     <div class="container">
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html" class="active">Database</a></li>
+                <li><a href="optcg-leaders-stats.html">Statistics</a></li>
+            </ul>
+        </nav>
+
         <h1><img src="Cards/logo_op.png" alt="One Piece TCG Database Logo"></h1>
         
         <div id="status" class="status" style="display: none;"></div>
@@ -495,7 +536,7 @@
             const container = document.getElementById('cardsContainer');
             container.innerHTML = '';
 
-            const cardsToShow = filteredCards.slice(0, 200);
+            const cardsToShow = filteredCards.slice(0, 48);
             
             cardsToShow.forEach(card => {
                 const cardEl = document.createElement('div');
@@ -528,7 +569,7 @@
                 const moreEl = document.createElement('div');
                 moreEl.className = 'status';
                 moreEl.style.gridColumn = '1 / -1';
-                moreEl.textContent = `Showing first 200 of ${filteredCards.length} cards. Use search to filter.`;
+                moreEl.textContent = `Showing first 48 of ${filteredCards.length} cards. Use search to filter.`;
                 container.appendChild(moreEl);
             }
 
