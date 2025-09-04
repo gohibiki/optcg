@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Piece TCG Leaders Stats</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+h1 img {
+            max-width: 100%;
+            max-height: 80px;
+            display: block;
+            margin: 0 auto;
+        }
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.search-bar, .set-selector {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.sort-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.sort-btn {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #333;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sort-btn.active {
+    background: #2196f3;
+    color: white;
+    border-color: #2196f3;
+}
+
+.leaders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.leader-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.leader-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.leader-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.leader-image .no-image {
+    width: 100%;
+    height: 180px;
+    background: #f0f0f0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #999;
+    text-align: center;
+}
+
+.leader-stats {
+    padding: 8px;
+}
+
+.stats-row-1 {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.stats-row-2 {
+    text-align: center;
+}
+
+.stat-item {
+    text-align: center;
+    flex: 1;
+}
+
+.stat-value {
+    font-weight: bold;
+    color: #495057;
+    font-size: 15px;
+}
+
+.stat-name {
+    color: #6c757d;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.win-rate-stat .stat-value {
+    color: #2196f3;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 2% auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 1000px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    gap: 30px;
+}
+
+.modal-image {
+    flex-shrink: 0;
+    width: 350px;
+}
+
+.modal-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.modal-details {
+    flex: 1;
+    position: relative;
+}
+
+.modal-details h2 {
+    margin: 0 0 25px 0;
+    font-size: 28px;
+    color: #333;
+}
+
+.modal-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #2196f3;
+}
+
+.modal-stat-label {
+    font-weight: bold;
+    color: #666;
+    font-size: 14px;
+}
+
+.modal-stat-value {
+    font-weight: bold;
+    color: #333;
+    font-size: 16px;
+}
+
+.close {
+    position: absolute;
+    top: -10px;
+    right: 0;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover { color: #333; }
+
+.advanced-stats {
+    margin: 25px 0;
+    background: #fff3e0;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #ff9800;
+}
+
+.advanced-stats h3 {
+    margin: 0 0 15px 0;
+    color: #ff9800;
+    font-size: 16px;
+}
+
+.opening-hand-stats {
+    margin: 25px 0;
+    background: #f3e5f5;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #9c27b0;
+}
+
+.opening-hand-stats h3 {
+    margin: 0 0 15px 0;
+    color: #9c27b0;
+    font-size: 16px;
+}
+
+.opening-hand-stats h4, .top-decklists h4, .card-performance-stats h4 {
+    margin: 15px 0 10px 0;
+    color: #666;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.hand-cards-section {
+    margin-bottom: 20px;
+}
+
+.played-card-item.best {
+    border-left: 3px solid #4caf50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.played-card-item.worst {
+    border-left: 3px solid #f44336;
+    background: rgba(244, 67, 54, 0.1);
+}
+
+.mulligan-stats {
+    margin: 25px 0;
+    background: #e8f4fd;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #2196f3;
+}
+
+.mulligan-stats h3 {
+    margin: 0 0 15px 0;
+    color: #2196f3;
+    font-size: 16px;
+}
+
+.played-card-item.mulligan {
+    border-left: 3px solid #2196f3;
+    background: rgba(33, 150, 243, 0.1);
+}
+
+.card-performance-stats {
+    margin: 25px 0;
+    background: #f1f8e9;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #8bc34a;
+}
+
+.card-performance-stats h3 {
+    margin: 0 0 15px 0;
+    color: #8bc34a;
+    font-size: 16px;
+}
+
+.played-card-item.core {
+    border-left: 3px solid #8bc34a;
+    background: rgba(139, 195, 74, 0.1);
+}
+
+.played-card-item.tech {
+    border-left: 3px solid #ff5722;
+    background: rgba(255, 87, 34, 0.1);
+}
+
+.modal-played-cards {
+    margin: 25px 0;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #4caf50;
+}
+.modal-played-cards h3 {
+    margin: 0 0 15px 0;
+    color: #4caf50;
+    font-size: 16px;
+}
+.played-cards-list {
+    overflow-y: auto;
+    padding-right: 10px;
+    max-height: 400px;
+}
+.played-card-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+.played-card-item:last-child {
+    border-bottom: none;
+}
+.played-card-image-container {
+    flex-shrink: 0;
+    width: 50px;
+    height: 70px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.played-card-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.played-card-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.played-card-name {
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+}
+.played-card-id {
+    font-size: 12px;
+    color: #888;
+}
+.played-card-stats {
+    color: #666;
+    margin-left: 15px;
+    min-width: 120px;
+    text-align: right;
+    font-size: 13px;
+}
+
+.top-decklists {
+    margin-top: 25px;
+    background: #e0f2f1;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #009688;
+}
+.top-decklists h3 {
+    margin: 0 0 15px 0;
+    color: #009688;
+    font-size: 16px;
+}
+.decklist {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #b2dfdb;
+}
+.decklist:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.decklist-stats {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.decklist-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+.decklist-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.decklist-card-image {
+    width: 70px;
+    height: 98px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+.decklist-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.decklist-card-info {
+    font-size: 10px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.matrix-modal-content {
+    background-color: white;
+    margin: 2% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 95%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.matrix-modal-content h2 {
+    text-align: center;
+    margin-top: 0;
+}
+
+.matrix-wrapper {
+    overflow: auto;
+    margin-top: 15px;
+}
+
+.matrix-grid {
+    display: grid;
+    background-color: #ccc;
+    white-space: nowrap;
+    min-width: max-content;
+}
+
+.matrix-cell {
+    background-color: #fff;
+    padding: 4px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    min-width: 90px;
+}
+
+.matrix-header {
+    background-color: #f2f2f2 !important;
+    font-weight: bold;
+    min-height: 60px;
+}
+
+.matrix-header img {
+    width: 50px;
+    height: auto;
+    border-radius: 3px;
+}
+
+.win-cell {
+    font-size: 12px;
+    line-height: 1.2; /* Adjusted for tighter spacing */
+}
+.win-cell-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    color: #888;
+}
+.win-cell-value {
+    font-weight: bold;
+    font-size: 13px;
+}
+.win-cell-games {
+    font-size: 9px;
+    color: #aaa;
+    margin-top: 0; /* Adjusted for tighter spacing */
+}
+
+.win-high {
+    background-color: #e8f5e9;
+}
+.win-high .win-cell-value {
+     color: #2e7d32;
+}
+
+.win-low {
+    background-color: #ffebee;
+}
+.win-low .win-cell-value {
+    color: #c62828;
+}
+
+.win-neutral {
+    background-color: #f0f0f0;
+}
+
+.close-matrix {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-matrix:hover { color: #333; }
+
+.matrix-grid .sticky-top {
+    position: sticky;
+    top: 0;
+    background-color: #f2f2f2 !important;
+    z-index: 10;
+}
+
+.matrix-grid .sticky-left {
+    position: sticky;
+    left: 0;
+    background-color: #f2f2f2 !important;
+    z-index: 10;
+}
+
+.matrix-grid .sticky-top.sticky-left {
+    z-index: 20;
+    background-color: #f2f2f2 !important;
+}
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.toast {
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 1;
+    transition: opacity 0.5s, transform 0.5s;
+    transform: translateX(0);
+}
+.toast.success { background-color: #2e7d32; }
+.toast.error { background-color: #c62828; }
+.toast.info { background-color: #1976d2; }
+.toast.hide {
+    opacity: 0;
+    transform: translateX(calc(100% + 20px));
+}
+
+.modal-tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.tab-button {
+    padding: 10px 15px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-size: 15px;
+    color: #666;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+}
+.tab-button.active {
+    color: #2196f3;
+    border-bottom-color: #2196f3;
+    font-weight: bold;
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        flex-direction: column;
+        margin: 5% auto;
+    }
+    .modal-image {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    .modal-stats {
+        grid-template-columns: 1fr;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><img src="Cards/logo_op.png" alt="One Piece TCG Database Logo"></h1>
+        
+        <div class="controls">
+            <input type="text" id="searchBar" class="search-bar" placeholder="Search leaders by name...">
+            <select id="setSelector" class="set-selector">
+                <option value="13" selected>Set OP13</option>
+                <option value="12">Set OP12</option>
+                <option value="11">Set OP11</option>
+                <option value="10">Set OP10</option>
+                <option value="09">Set OP09</option>
+                <option value="08">Set OP08</option>
+            </select>
+            <div class="sort-buttons">
+                <button class="sort-btn active" id="matchesSort">Sort by Matches</button>
+                <button class="sort-btn" id="winRateSort">Sort by Win Rate</button>
+                <button class="sort-btn" id="matrixBtn">Leaders Matrix</button>
+            </div>
+        </div>
+        
+        <div id="leadersContainer" class="leaders-grid"></div>
+        
+        <div id="leaderModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-image" id="modalImage"></div>
+                <div class="modal-details" id="modalDetails"></div>
+            </div>
+        </div>
+
+        <div id="matrixModal" class="modal">
+            <div class="matrix-modal-content">
+                <span class="close-matrix">&times;</span>
+                <h2>Leaders Matchups</h2>
+                <div class="matrix-wrapper">
+                     <div id="matrixGrid" class="matrix-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script>
+        let allLeaders = [];
+        let leadersPresenceData = [];
+        let decklistsData = [];
+        let filteredLeaders = [];
+        let currentSort = 'matches';
+        let cardsDatabase = [];
+        let isCardsDbLoaded = false;
+
+        function showToast(message, type = 'info', duration = 4000) {
+            // This function is intentionally left blank to disable all toast notifications.
+        }
+
+        async function loadCardsDatabase() {
+            if (isCardsDbLoaded) return;
+            try {
+                const response = await fetch('https://corsproxy.io/?https://api.dotgg.gg/cgfw/getcards?game=onepiece&mode=indexed&cache=6360');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                cardsDatabase = data.data.map(cardArray => ({
+                    id: cardArray[0] || 'N/A',
+                    name: cardArray[4] || 'N/A',
+                })).filter(card => card.name !== 'N/A' && !card.id.includes('_'));
+                isCardsDbLoaded = true;
+            } catch (error) {
+                console.error('Error loading cards database:', error);
+                throw new Error('Failed to load card names database.');
+            }
+        }
+
+        function getCardInfo(leaderId) {
+            const cleanId = leaderId.replace(/^\d+x/, '');
+            const card = cardsDatabase.find(c => c.id === cleanId);
+            return { id: cleanId, name: card ? card.name : cleanId, hasCard: !!card };
+        }
+
+        function calculateAdvancedStats(leaderData, totalMatches) {
+            let firstWins = 0, firstMatches = 0, secondWins = 0, secondMatches = 0;
+            let mulliganFirst = 0, mulliganSecond = 0;
+
+            if (leaderData.subject_keep_first && leaderData.subject_keep_second) {
+                for (let i = 1; i < leaderData.subject_keep_first.length && i < leaderData.subject_wins.length; i++) {
+                    const cardFirstKeeps = leaderData.subject_keep_first[i] || 0;
+                    const cardSecondKeeps = leaderData.subject_keep_second[i] || 0;
+                    const cardWins = leaderData.subject_wins[i] || 0;
+                    const cardMatches = leaderData.subject_matches[i] || 0;
+
+                    if (cardMatches > 0 && (cardFirstKeeps + cardSecondKeeps > 0)) {
+                        const estimatedFirstMatches = Math.round(cardMatches * 0.5);
+                        const estimatedSecondMatches = cardMatches - estimatedFirstMatches;
+                        const estimatedFirstWins = Math.round(cardWins * (cardFirstKeeps / (cardFirstKeeps + cardSecondKeeps)));
+                        
+                        firstMatches += estimatedFirstMatches;
+                        secondMatches += estimatedSecondMatches;
+                        firstWins += estimatedFirstWins;
+                        secondWins += cardWins - estimatedFirstWins;
+                    }
+                }
+            }
+
+            if (leaderData.subject_mulligan_first && leaderData.subject_mulligan_second) {
+                mulliganFirst = leaderData.subject_mulligan_first.reduce((sum, val) => sum + (val || 0), 0);
+                mulliganSecond = leaderData.subject_mulligan_second.reduce((sum, val) => sum + (val || 0), 0);
+            }
+
+            const totalMulligans = mulliganFirst + mulliganSecond;
+            const mulliganRate = totalMatches > 0 ? (totalMulligans / totalMatches * 100) : 0;
+            const firstWinRate = firstMatches > 0 ? (firstWins / firstMatches * 100) : 0;
+            const secondWinRate = secondMatches > 0 ? (secondWins / secondMatches * 100) : 0;
+
+            const openingHandStats = calculateOpeningHandStats(leaderData);
+            const cardPerformance = calculateCardPerformance(leaderData, totalMatches);
+
+            return {
+                firstWinRate: firstWinRate.toFixed(1),
+                secondWinRate: secondWinRate.toFixed(1),
+                mulliganRate: mulliganRate.toFixed(1),
+                openingHandStats,
+                cardPerformance
+            };
+        }
+
+        function calculateCardPerformance(leaderData, totalMatches) {
+            if (!leaderData.subject || !leaderData.subject_matches || !leaderData.subject_wins) {
+                return { coreCards: [], techCards: [] };
+            }
+
+            const cardPerformance = [];
+            
+            for (let i = 1; i < leaderData.subject.length; i++) {
+                const cardIdWithCount = leaderData.subject[i];
+                const cardMatches = leaderData.subject_matches[i] || 0;
+                const cardWins = leaderData.subject_wins[i] || 0;
+                const presence = leaderData.presence[i] || 0;
+                
+                if (cardMatches >= 10 && totalMatches > 0) {
+                    const playRate = (cardMatches / totalMatches) * 100;
+                    const winRate = cardMatches > 0 ? (cardWins / cardMatches) * 100 : 0;
+                    const cardInfo = getCardInfo(cardIdWithCount);
+                    const avgCopies = presence / totalMatches;
+                    
+                    cardPerformance.push({
+                        id: cardInfo.id,
+                        name: cardInfo.name,
+                        hasCard: cardInfo.hasCard,
+                        playRate,
+                        winRate,
+                        avgCopies,
+                        cardMatches,
+                        cardWins
+                    });
+                }
+            }
+
+            const coreCards = cardPerformance
+                .filter(card => card.playRate > 80)
+                .sort((a, b) => b.winRate - a.winRate)
+                .slice(0, 10);
+
+            const techCards = cardPerformance
+                .filter(card => card.playRate < 40 && card.winRate > 60)
+                .sort((a, b) => b.winRate - a.winRate)
+                .slice(0, 10);
+
+            return { coreCards, techCards };
+        }
+
+        function calculateOpeningHandStats(leaderData) {
+            if (!leaderData.subject || !leaderData.subject_keep_first || !leaderData.subject_wins_in_hand_first) {
+                return { bestCards: [], worstCards: [] };
+            }
+
+            const cardStats = [];
+            
+            for (let i = 1; i < leaderData.subject.length && i < leaderData.subject_keep_first.length; i++) {
+                const cardIdWithCount = leaderData.subject[i];
+                const firstKeeps = leaderData.subject_keep_first[i] || 0;
+                const secondKeeps = leaderData.subject_keep_second[i] || 0;
+                const totalKeeps = firstKeeps + secondKeeps;
+                
+                const firstWinsInHand = leaderData.subject_wins_in_hand_first[i] || 0;
+                const secondWinsInHand = leaderData.subject_wins_in_hand_second[i] || 0;
+                const totalWinsInHand = firstWinsInHand + secondWinsInHand;
+                
+                const firstLossesInHand = leaderData.subject_losses_in_hand_first[i] || 0;
+                const secondLossesInHand = leaderData.subject_losses_in_hand_second[i] || 0;
+                const totalLossesInHand = firstLossesInHand + secondLossesInHand;
+                
+                if (totalKeeps >= 10) {
+                    const winRateInHand = (totalWinsInHand + totalLossesInHand) > 0 ? (totalWinsInHand / (totalWinsInHand + totalLossesInHand)) * 100 : 0;
+                    const cardInfo = getCardInfo(cardIdWithCount);
+                    
+                    cardStats.push({
+                        id: cardInfo.id,
+                        name: cardInfo.name,
+                        hasCard: cardInfo.hasCard,
+                        totalKeeps,
+                        winRateInHand,
+                        totalWinsInHand,
+                        totalLossesInHand
+                    });
+                }
+            }
+
+            cardStats.sort((a, b) => b.winRateInHand - a.winRateInHand);
+            
+            return {
+                bestCards: cardStats.slice(0, 5),
+                worstCards: cardStats.slice(-5).reverse()
+            };
+        }
+
+        function getImagePath(cardId) {
+            let setName;
+            if (cardId.startsWith('P-')) {
+                setName = 'P';
+            } else {
+                const setMatch = cardId.match(/^([A-Z]+\d+)/);
+                if (!setMatch) return null;
+                setName = setMatch[1];
+            }
+            return [`Cards/${setName}/${cardId}.webp`];
+        }
+        
+        async function loadLeadersStats() {
+            const setSelector = document.getElementById('setSelector');
+            const setNumber = setSelector.value;
+            const url = `https://corsproxy.io/?https://opbountypck.s3.us-east-1.amazonaws.com/stats/regular/Stats_OP${setNumber}.json`;
+
+            document.getElementById('leadersContainer').innerHTML = '';
+            document.getElementById('searchBar').value = '';
+
+            try {
+                if (!isCardsDbLoaded) {
+                    showToast('Loading cards database...', 'info', 6000);
+                    await loadCardsDatabase();
+                }
+                showToast(`Fetching stats for OP${setNumber}...`, 'info', 6000);
+                
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const rawData = await response.text();
+                const decodedData = atob(rawData);
+                const uint8Array = new Uint8Array(decodedData.split("").map(c => c.charCodeAt(0)));
+                const decompressed = new TextDecoder().decode(pako.inflate(uint8Array));
+                const data = JSON.parse(decompressed);
+                
+                processLeadersData(data);
+            } catch (error) {
+                console.error('Error loading leaders stats:', error);
+                showToast(`Failed to load stats for OP${setNumber}: ${error.message}`, 'error');
+            }
+        }
+
+        function processLeadersData(data) {
+            try {
+                leadersPresenceData = data.leaders_presence || [];
+                decklistsData = data.decklists || [];
+
+                allLeaders = (data.cards_presence || []).map(leaderData => {
+                    const cardInfo = getCardInfo(leaderData.leader || 'Unknown');
+                    const totalMatches = leaderData.number_of_matches;
+                    if (totalMatches === 0) return null; 
+
+                    const wins = leaderData.subject_wins[0];
+                    const losses = totalMatches - wins;
+                    
+                    const advancedStats = calculateAdvancedStats(leaderData, totalMatches);
+
+                    let playedCards = [];
+                    if (leaderData.subject && leaderData.subject.length > 1) {
+                        playedCards = leaderData.subject.map((cardIdWithCount, index) => {
+                            const cardData = getCardInfo(cardIdWithCount);
+                            const presence = leaderData.presence[index]; 
+                            const inDecksCount = leaderData.subject_matches[index];
+                            const winsCount = leaderData.subject_wins[index];
+                            
+                            const avgCopies = totalMatches > 0 ? presence / totalMatches : 0;
+                            const playRate = totalMatches > 0 ? (inDecksCount / totalMatches) * 100 : 0;
+                            const winRate = inDecksCount > 0 ? (winsCount / inDecksCount) * 100 : 0;
+                            
+                            return {
+                                ...cardData,
+                                presence: presence,
+                                avgCopies: avgCopies,
+                                playRate: playRate,
+                                winRate: winRate
+                            };
+                        }).sort((a, b) => b.playRate - a.playRate);
+                    }
+
+                    return {
+                        id: cardInfo.id,
+                        name: cardInfo.name,
+                        hasCard: cardInfo.hasCard,
+                        wins: wins,
+                        losses: losses,
+                        totalMatches: totalMatches,
+                        winRate: totalMatches > 0 ? (wins / totalMatches * 100) : 0,
+                        playedCards: playedCards,
+                        advancedStats: advancedStats
+                    };
+                }).filter(leader => leader && leader.totalMatches > 50 && leader.name !== 'Mobile');
+
+                if (allLeaders.length === 0) {
+                    showToast('No leader data found for this set.', 'error');
+                    return;
+                }
+
+                filteredLeaders = [...allLeaders];
+                
+                document.querySelector('.controls').style.display = 'flex';
+                sortAndRenderLeaders();
+            } catch (error) {
+                console.error('Error processing data:', error);
+                showToast(`Failed to process leaders data: ${error.message}`, 'error');
+            }
+        }
+
+        function renderLeaders() {
+            const container = document.getElementById('leadersContainer');
+            container.innerHTML = '';
+            
+            filteredLeaders.forEach(leader => {
+                const leaderEl = document.createElement('div');
+                leaderEl.className = 'leader-card';
+                leaderEl.addEventListener('click', () => openLeaderModal(leader));
+                
+                const imagePaths = getImagePath(leader.id);
+                let imageHTML;
+                if (imagePaths && leader.hasCard) {
+                    imageHTML = `<img src="${imagePaths[0]}" alt="${leader.name}" onerror="this.parentElement.innerHTML='<div class=&quot;no-image&quot;><div>No Image<br><small>${leader.id}</small></div></div>'">`;
+                } else {
+                    imageHTML = `<div class="no-image"><div>No Image<br><small>${leader.id}</small></div></div>`;
+                }
+
+                leaderEl.innerHTML = `
+                    <div class="leader-image">
+                        ${imageHTML}
+                    </div>
+                    <div class="leader-stats">
+                        <div class="stats-row-1">
+                            <div class="stat-item">
+                                <div class="stat-value">${leader.wins}</div>
+                                <div class="stat-name">W</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${leader.losses}</div>
+                                <div class="stat-name">L</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${leader.totalMatches}</div>
+                                <div class="stat-name">M</div>
+                            </div>
+                        </div>
+                        <div class="stats-row-2">
+                            <div class="win-rate-stat">
+                                <div class="stat-value">${leader.winRate.toFixed(1)}%</div>
+                                <div class="stat-name">Win Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(leaderEl);
+            });
+        }
+        
+        function openLeaderModal(leader) {
+            const modal = document.getElementById('leaderModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalDetails = document.getElementById('modalDetails');
+            
+            const imagePaths = getImagePath(leader.id);
+            modalImage.innerHTML = imagePaths ? `<img src="${imagePaths[0]}" alt="${leader.name}" onerror="this.style.display='none'">` : '';
+
+            let tabButtonsHTML = '';
+            let tabContentsHTML = '';
+            let activeTabSet = false;
+
+            const addTab = (title, content, id) => {
+                const isActive = !activeTabSet;
+                tabButtonsHTML += `<button class="tab-button ${isActive ? 'active' : ''}" data-tab-target="#${id}">${title}</button>`;
+                tabContentsHTML += `<div id="${id}" class="tab-content ${isActive ? 'active' : ''}">${content}</div>`;
+                activeTabSet = true;
+            };
+
+            // Tab 1: Performance Analysis (Merged Overview and Performance)
+            let analysisContent = `
+                <div class="modal-stats">
+                    <div class="stat-row"><span class="modal-stat-label">Win Rate</span><span class="modal-stat-value">${leader.winRate.toFixed(1)}%</span></div>
+                    <div class="stat-row"><span class="modal-stat-label">Total Matches</span><span class="modal-stat-value">${leader.totalMatches}</span></div>
+                    <div class="stat-row"><span class="modal-stat-label">Total Wins</span><span class="modal-stat-value">${leader.wins}</span></div>
+                    <div class="stat-row"><span class="modal-stat-label">Total Losses</span><span class="modal-stat-value">${leader.losses}</span></div>
+            `;
+            if (leader.advancedStats) {
+                analysisContent += `
+                    <div class="stat-row"><span class="modal-stat-label">Going First Win Rate</span><span class="modal-stat-value">${leader.advancedStats.firstWinRate}%</span></div>
+                    <div class="stat-row"><span class="modal-stat-label">Going Second Win Rate</span><span class="modal-stat-value">${leader.advancedStats.secondWinRate}%</span></div>
+                    <div class="stat-row"><span class="modal-stat-label">Mulligan Rate</span><span class="modal-stat-value">${leader.advancedStats.mulliganRate}%</span></div>
+                `;
+            }
+            analysisContent += `</div>`;
+            addTab('Overview', analysisContent, 'tab-analysis');
+
+            // Tab 2: Opening Hand Analysis
+            if (leader.advancedStats && leader.advancedStats.openingHandStats.bestCards.length > 0) {
+                const handContent = `
+                    <div class="hand-cards-section">
+                        <h4>Best Keep Cards</h4>
+                        <div class="decklist-cards">
+                            ${leader.advancedStats.openingHandStats.bestCards.map(card => {
+                                const imagePaths = getImagePath(card.id);
+                                const imageHTML = imagePaths ? `<img src="${imagePaths[0]}" alt="${card.name}" onerror="this.parentElement.innerHTML = ''">` : '';
+                                return `<div class="decklist-card">
+                                    <div class="decklist-card-image">${imageHTML}</div>
+                                    <div class="decklist-card-info">${card.winRateInHand.toFixed(1)}% WR in hand</div>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                    ${leader.advancedStats.openingHandStats.worstCards.length > 0 ? `
+                        <div class="hand-cards-section">
+                            <h4>Risky Keep Cards</h4>
+                            <div class="decklist-cards">
+                                ${leader.advancedStats.openingHandStats.worstCards.map(card => {
+                                    const imagePaths = getImagePath(card.id);
+                                    const imageHTML = imagePaths ? `<img src="${imagePaths[0]}" alt="${card.name}" onerror="this.parentElement.innerHTML = ''">` : '';
+                                    return `<div class="decklist-card">
+                                        <div class="decklist-card-image">${imageHTML}</div>
+                                        <div class="decklist-card-info">${card.winRateInHand.toFixed(1)}% WR in hand</div>
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    ` : ''}`;
+                addTab('Opening', handContent, 'tab-opening-hand');
+            }
+
+            // Tab 3: Card Performance Analysis
+            if (leader.advancedStats && (leader.advancedStats.cardPerformance.coreCards.length > 0 || leader.advancedStats.cardPerformance.techCards.length > 0)) {
+                const cardPerfContent = `
+                    ${leader.advancedStats.cardPerformance.coreCards.length > 0 ? `
+                        <div class="hand-cards-section"><h4>Core Cards</h4><div class="decklist-cards">${leader.advancedStats.cardPerformance.coreCards.map(card => {
+                            const imagePaths = getImagePath(card.id);
+                            const imageHTML = imagePaths ? `<img src="${imagePaths[0]}" alt="${card.name}" onerror="this.parentElement.innerHTML = ''">` : '';
+                            return `<div class="decklist-card">
+                                <div class="decklist-card-image">${imageHTML}</div>
+                                <div class="decklist-card-info">${card.playRate.toFixed(0)}% play | ${card.winRate.toFixed(1)}% WR</div>
+                            </div>`;
+                        }).join('')}</div></div>` : ''}
+                    ${leader.advancedStats.cardPerformance.techCards.length > 0 ? `
+                        <div class="hand-cards-section"><h4>Tech Cards</h4><div class="decklist-cards">${leader.advancedStats.cardPerformance.techCards.map(card => {
+                            const imagePaths = getImagePath(card.id);
+                            const imageHTML = imagePaths ? `<img src="${imagePaths[0]}" alt="${card.name}" onerror="this.parentElement.innerHTML = ''">` : '';
+                            return `<div class="decklist-card">
+                                <div class="decklist-card-image">${imageHTML}</div>
+                                <div class="decklist-card-info">${card.playRate.toFixed(0)}% play | ${card.winRate.toFixed(1)}% WR</div>
+                            </div>`;
+                        }).join('')}</div></div>` : ''}`;
+                addTab('Card Performance', cardPerfContent, 'tab-card-perf');
+            }
+
+            // Tab 4: Most Played Cards
+            if (leader.playedCards && leader.playedCards.length > 1) {
+                const playedCardsContent = `
+                    <div class="decklist-cards">
+                        ${leader.playedCards.slice(1, 31).map(card => {
+                            const imagePaths = getImagePath(card.id);
+                            const imageHTML = imagePaths ? `<img src="${imagePaths[0]}" alt="${card.name}" onerror="this.parentElement.innerHTML = ''">` : '';
+                            return `<div class="decklist-card">
+                                <div class="decklist-card-image">${imageHTML}</div>
+                                <div class="decklist-card-info">${card.avgCopies.toFixed(2)} avg. | ${card.playRate.toFixed(0)}% use | ${card.winRate.toFixed(1)}% WR</div>
+                            </div>`;
+                        }).join('')}
+                    </div>`;
+                addTab('Most Played', playedCardsContent, 'tab-played-cards');
+            }
+
+            // Tab 5: Top Decklists
+            const leaderDecklists = decklistsData.find(d => (d.leader || '').includes(leader.id));
+            if (leaderDecklists) {
+                 const sortedLists = leaderDecklists.lists
+                    .filter(list => list.number_of_matches > 5)
+                    .sort((a, b) => (b.wins / b.number_of_matches) - (a.wins / a.number_of_matches))
+                    .slice(0, 3);
+                
+                if (sortedLists.length > 0) {
+                     const decklistsContent = `${sortedLists.map(list => {
+                            const listWinRate = (list.wins / list.number_of_matches * 100).toFixed(1);
+                            return `<div class="decklist">
+                                <h4>Record: ${list.wins}W - ${list.losses}L (${listWinRate}%) | ${list.number_of_matches} Games</h4>
+                                <div class="decklist-cards">${list.deck.slice(1).map(cardString => {
+                                    const [count, ...idParts] = cardString.split('x'); const cardId = idParts.join('x');
+                                    const cardInfo = getCardInfo(cardId); const imagePaths = getImagePath(cardId);
+                                    const imageHTML = imagePaths ? `<img src="${imagePaths[0]}" alt="${cardInfo.name}" onerror="this.parentElement.innerHTML = ''">` : '';
+                                    return `<div class="decklist-card"><div class="decklist-card-image">${imageHTML}</div><div class="decklist-card-info">${count}x ${cardId}</div></div>`;
+                                }).join('')}</div></div>`;
+                        }).join('')}`;
+                    addTab('Top Decklists', decklistsContent, 'tab-decklists');
+                }
+            }
+            
+            modalDetails.innerHTML = `
+                <span class="close">&times;</span><h2>${leader.name}</h2>
+                <div class="modal-tabs">${tabButtonsHTML}</div>
+                <div class="tabs-content">${tabContentsHTML}</div>
+            `;
+            modal.style.display = 'block';
+
+            modalDetails.querySelector('.close').addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            const tabsContainer = modalDetails.querySelector('.modal-tabs');
+            if(tabsContainer) {
+                 tabsContainer.addEventListener('click', (e) => {
+                    if (e.target.matches('.tab-button')) {
+                        tabsContainer.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                        e.target.classList.add('active');
+                        const targetId = e.target.dataset.tabTarget;
+                        modalDetails.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                        modalDetails.querySelector(targetId).classList.add('active');
+                    }
+                });
+            }
+        }
+
+        function sortAndRenderLeaders() {
+            if (currentSort === 'winrate') {
+                filteredLeaders.sort((a, b) => b.winRate - a.winRate);
+            } else if (currentSort === 'matches') {
+                filteredLeaders.sort((a, b) => b.totalMatches - a.totalMatches);
+            }
+            renderLeaders();
+        }
+
+        function searchLeaders() {
+            const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+            filteredLeaders = searchTerm === '' ? [...allLeaders] : allLeaders.filter(l => l.name.toLowerCase().includes(searchTerm));
+            sortAndRenderLeaders();
+        }
+
+        function openMatrixModal() {
+            const modal = document.getElementById('matrixModal');
+            const container = document.getElementById('matrixGrid');
+            container.innerHTML = '';
+
+            const topLeaders = [...allLeaders]
+                .sort((a, b) => b.totalMatches - a.totalMatches)
+                .slice(0, 50);
+
+            if (topLeaders.length < 2 || leadersPresenceData.length === 0) {
+                container.innerHTML = '<p>Not enough matchup data to generate a matrix.</p>';
+                modal.style.display = 'block';
+                return;
+            }
+
+            const leaderCount = topLeaders.length;
+            // --- Reverted first column width to 90px to match the min-width of data cells for consistency ---
+            container.style.gridTemplateColumns = `90px repeat(${leaderCount}, minmax(90px, 1fr))`;
+
+            const topLeft = document.createElement('div');
+            topLeft.className = 'matrix-cell matrix-header sticky-top sticky-left';
+            container.appendChild(topLeft);
+
+            topLeaders.forEach(leader => {
+                const headerCell = document.createElement('div');
+                headerCell.className = 'matrix-cell matrix-header sticky-top';
+                const imagePaths = getImagePath(leader.id);
+                const imageHTML = imagePaths ? `<img src="${imagePaths[0]}" alt="${leader.name}" onerror="this.parentElement.innerHTML=''">` : '';
+                headerCell.innerHTML = imageHTML;
+                container.appendChild(headerCell);
+            });
+
+            topLeaders.forEach(rowLeader => {
+                const sideHeaderCell = document.createElement('div');
+                sideHeaderCell.className = 'matrix-cell matrix-header sticky-left';
+                const imagePaths = getImagePath(rowLeader.id);
+                const imageHTML = imagePaths ? `<img src="${imagePaths[0]}" alt="${rowLeader.name}" onerror="this.parentElement.innerHTML=''">` : '';
+                sideHeaderCell.innerHTML = imageHTML;
+                container.appendChild(sideHeaderCell);
+
+                const rowLeaderData = leadersPresenceData.find(d => (d.leader || '').includes(rowLeader.id));
+
+                topLeaders.forEach(colLeader => {
+                    const dataCell = document.createElement('div');
+                    dataCell.className = 'matrix-cell win-cell';
+                    
+                    if (rowLeader.id === colLeader.id) {
+                        dataCell.innerHTML = `<div class="win-cell-value">-</div>`;
+                        dataCell.classList.add('win-neutral');
+                    } else if (rowLeaderData && rowLeaderData.subject_first_wins) {
+                        const opponentIdPattern = new RegExp(colLeader.id + '$');
+                        const opponentIndex = rowLeaderData.subject.findIndex(s => opponentIdPattern.test(s));
+
+                        if (opponentIndex !== -1 && opponentIndex < rowLeaderData.subject_first_wins.length) {
+                            const first_wins = rowLeaderData.subject_first_wins[opponentIndex] || 0;
+                            const first_losses = rowLeaderData.subject_first_losses[opponentIndex] || 0;
+                            const second_wins = rowLeaderData.subject_second_wins[opponentIndex] || 0;
+                            const second_losses = rowLeaderData.subject_second_losses[opponentIndex] || 0;
+                            
+                            const firstTurnGames = first_wins + first_losses;
+                            const secondTurnGames = second_wins + second_losses;
+                            const totalGames = firstTurnGames + secondTurnGames;
+                            const totalWins = first_wins + second_wins;
+
+                            const firstTurnWR = firstTurnGames > 0 ? (first_wins / firstTurnGames) * 100 : 0;
+                            const secondTurnWR = secondTurnGames > 0 ? (second_wins / secondTurnGames) * 100 : 0;
+                            const overallWR = totalGames > 0 ? (totalWins / totalGames) * 100 : 0;
+                            
+                            if (overallWR > 50) dataCell.classList.add('win-high');
+                            else if (overallWR < 50) dataCell.classList.add('win-low');
+                            else dataCell.classList.add('win-neutral');
+
+                            const firstTurnColor = firstTurnWR > 50 ? '#2e7d32' : (firstTurnWR < 50 ? '#c62828' : '#333');
+                            const secondTurnColor = secondTurnWR > 50 ? '#2e7d32' : (secondTurnWR < 50 ? '#c62828' : '#333');
+                            
+                            // --- MODIFICATION: Changed to a single-column, stacked layout ---
+                            dataCell.innerHTML = `
+                                <div style="margin-bottom: 5px;">
+                                    <div class="win-cell-label">1st: <span class="win-cell-value" style="color: ${firstTurnColor};">${firstTurnWR.toFixed(1)}%</span></div>
+                                    <div class="win-cell-games">${firstTurnGames}</div>
+                                </div>
+                                <div>
+                                    <div class="win-cell-label">2nd: <span class="win-cell-value" style="color: ${secondTurnColor};">${secondTurnWR.toFixed(1)}%</span></div>
+                                    <div class="win-cell-games">${secondTurnGames}</div>
+                                </div>
+                            `;
+                            // --- MODIFICATION END ---
+
+                        } else {
+                            dataCell.textContent = 'N/A';
+                        }
+                    } else {
+                        dataCell.textContent = 'N/A';
+                    }
+                    container.appendChild(dataCell);
+                });
+            });
+
+            modal.style.display = 'block';
+        }
+        
+        document.getElementById('searchBar').addEventListener('input', searchLeaders);
+        document.getElementById('setSelector').addEventListener('change', loadLeadersStats);
+
+        document.getElementById('matchesSort').addEventListener('click', () => {
+            currentSort = 'matches';
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('matchesSort').classList.add('active');
+            sortAndRenderLeaders();
+        });
+
+        document.getElementById('winRateSort').addEventListener('click', () => {
+            currentSort = 'winrate';
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('winRateSort').classList.add('active');
+            sortAndRenderLeaders();
+        });
+
+        document.getElementById('matrixBtn').addEventListener('click', openMatrixModal);
+        
+        const leaderModal = document.getElementById('leaderModal');
+        const matrixModal = document.getElementById('matrixModal');
+        
+        window.addEventListener('click', (event) => {
+            if (event.target === leaderModal) {
+                leaderModal.style.display = 'none';
+            }
+            if (event.target === matrixModal) {
+                matrixModal.style.display = 'none';
+            }
+        });
+
+        leaderModal.addEventListener('click', (event) => {
+            if (event.target && event.target.classList.contains('close')) {
+                leaderModal.style.display = 'none';
+            }
+        });
+
+        matrixModal.querySelector('.close-matrix').addEventListener('click', () => {
+            matrixModal.style.display = 'none';
+        });
+
+        loadLeadersStats();
+    </script>
+</body>
+</html>
