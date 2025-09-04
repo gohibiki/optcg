@@ -4,7 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>One Piece TCG Leaders Stats</title>
+    <link rel="icon" href="favicon.png" type="image/png">
     <style>
+/* --- Navigation Menu Styles --- */
+.main-nav {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    padding: 10px 0px;
+}
+
+.main-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: flex-start; /* Aligned to the left */
+}
+
+.main-nav li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px 15px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.main-nav li a:hover, .main-nav li a.active {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
@@ -644,6 +677,13 @@ h1 img {
 </head>
 <body>
     <div class="container">
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Database</a></li>
+                <li><a href="stats.html" class="active">Statistics</a></li>
+            </ul>
+        </nav>
+
         <h1><img src="Cards/logo_op.png" alt="One Piece TCG Database Logo"></h1>
         
         <div class="controls">
