@@ -120,6 +120,7 @@ h1 img {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 15px;
     margin-top: 30px;
+    margin-bottom: 40px;
 }
 
 .leader-card {
@@ -233,16 +234,6 @@ h1 img {
 .modal-details {
     flex: 1;
     position: relative;
-    display: flex; /* Added */
-    flex-direction: column; /* Added */
-    min-height: 0; /* Added for better flexbox behavior */
-}
-
-.tabs-content {
-    flex-grow: 1; /* Allows this area to fill remaining vertical space */
-    overflow-y: auto; /* Adds a scrollbar ONLY when needed */
-    min-height: 0; /* Prevents overflow issues */
-    padding-right: 10px; /* Adds some space for the scrollbar */
 }
 
 .modal-details h2 {
