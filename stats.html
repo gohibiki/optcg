@@ -740,7 +740,8 @@ h1 img {
         async function loadCardsDatabase() {
             if (isCardsDbLoaded) return;
             try {
-                const response = await fetch('https://corsproxy.io/?https://api.dotgg.gg/cgfw/getcards?game=onepiece&mode=indexed&cache=6360');
+                // MODIFICATION: Changed fetch URL to the serverless function
+                const response = await fetch('/api/get-cards');
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 cardsDatabase = data.data.map(cardArray => ({
@@ -760,6 +761,7 @@ h1 img {
             return { id: cleanId, name: card ? card.name : cleanId, hasCard: !!card };
         }
 
+        // ... The rest of your functions (calculateAdvancedStats, etc.) are unchanged ...
         function calculateAdvancedStats(leaderData, totalMatches) {
             let firstWins = 0, firstMatches = 0, secondWins = 0, secondMatches = 0;
             let mulliganFirst = 0, mulliganSecond = 0;
@@ -911,7 +913,9 @@ h1 img {
         async function loadLeadersStats() {
             const setSelector = document.getElementById('setSelector');
             const setNumber = setSelector.value;
-            const url = `https://corsproxy.io/?https://opbountypck.s3.us-east-1.amazonaws.com/stats/regular/Stats_OP${setNumber}.json`;
+            
+            // MODIFICATION: Changed fetch URL to the dynamic serverless function
+            const url = `/api/get-stats?set=${setNumber}`;
 
             document.getElementById('leadersContainer').innerHTML = '';
             document.getElementById('searchBar').value = '';
@@ -938,7 +942,8 @@ h1 img {
                 showToast(`Failed to load stats for OP${setNumber}: ${error.message}`, 'error');
             }
         }
-
+        
+        // ... The rest of your JavaScript is unchanged ...
         function processLeadersData(data) {
             try {
                 leadersPresenceData = data.leaders_presence || [];
