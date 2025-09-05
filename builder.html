@@ -121,6 +121,7 @@
         .searcher-table th { background-color: #f2f2f2; font-weight: bold; }
         .searcher-info { font-size: 12px; margin-bottom: 5px; }
         .searcher-info strong { color: var(--primary-color); }
+        .searcher-table .prob-label { font-size: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -401,24 +402,24 @@
             document.getElementById('costCurve-labels').innerHTML = costCurve.map((_, i) => `<div class="cost-label" style="flex: 1;">${i === 10 ? '10+' : i}</div>`).join('');
 
             let searcherHTML = '';
-            const processedSearchers = new Set();
-            deck.forEach((_, cardId) => {
+            const uniqueCardIdsInDeck = [...deck.keys()];
+
+            for (const cardId of uniqueCardIdsInDeck) {
                 const card = allCards.find(c => c.id === cardId);
-                if (!card || processedSearchers.has(card.id)) return;
+                if (!card) continue;
 
                 const searcherData = parseSearcherEffect(card.effect);
                 if (searcherData) {
-                    processedSearchers.add(card.id);
                     const targets = findSearcherTargets(searcherData.types);
-                    if (targets.count === 0) return;
+                    if (targets.count === 0) continue;
 
                     let tableHTML = '<thead><tr><th>Turn</th>' + Array.from({length: 10}, (_, i) => `<th>${i+1}</th>`).join('') + '</tr></thead>';
-                    tableHTML += '<tbody><tr><td>Prob %</td>';
+                    tableHTML += `<tbody><tr><td class="prob-label">${searcherData.types.join('/')}</td>`;
                     
                     for (let turn = 1; turn <= 10; turn++) {
-                        const deckSizeAfterDraw = 50 - (5 + turn);
+                        const deckSizeAfterDraw = 50 - (5 + (turn - 1));
                         const prob = probAtLeastOne(targets.count, deckSizeAfterDraw, searcherData.look);
-                        tableHTML += `<td>${(prob * 100).toFixed(0)}</td>`;
+                        tableHTML += `<td>${(prob * 100).toFixed(0)}%</td>`;
                     }
                     tableHTML += '</tr></tbody>';
 
@@ -430,7 +431,7 @@
                         </div>
                     </div>`;
                 }
-            });
+            }
             const analysisContainer = document.getElementById('searcherAnalysis');
             analysisContainer.innerHTML = searcherHTML ? `<h3>Searcher Analysis</h3>${searcherHTML}` : '';
         }
