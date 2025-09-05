@@ -116,7 +116,18 @@
         .searcher-table th, .searcher-table td { border: 1px solid var(--border-color); padding: 5px; text-align: center; }
         .searcher-table th { background-color: #f2f2f2; font-weight: bold; }
         .searcher-table .prob-label { font-weight: bold; text-align: left; font-size: 11px; }
-
+        
+        .searcher-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+        .searcher-toggle input[type="checkbox"] {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -209,6 +220,12 @@
                     <div class="deck-footer">
                         <div class="deck-stats">
                             <div id="deckCardCount">Total Cards: 0 / 50</div>
+                            <div class="searcher-toggle">
+                                <label>
+                                    <input type="checkbox" id="goingSecondToggle">
+                                    Going Second
+                                </label>
+                            </div>
                         </div>
                         <div class="cost-curve-container" id="costCurve"></div>
                         <div id="costCurve-labels" class="cost-curve-labels" style="display: flex; gap: 4px; margin-top: 4px;"></div>
@@ -396,18 +413,20 @@
             document.getElementById('costCurve').innerHTML = costCurve.map((c, i) => `<div class="cost-bar" style="height: ${(c / maxCount) * 100}%;">${c > 0 ? `<span class="bar-count">${c}</span>` : ''}</div>`).join('');
             document.getElementById('costCurve-labels').innerHTML = costCurve.map((_, i) => `<div class="cost-label" style="flex: 1;">${i === 10 ? '10+' : i}</div>`).join('');
 
-            // --- REVISED Searcher Analysis ---
+            const goingSecond = document.getElementById('goingSecondToggle')?.checked || false;
             const searcherGroups = new Map();
+            
             deck.forEach((_, cardId) => {
                 const card = allCards.find(c => c.id === cardId);
                 if (!card) return;
                 const searcherData = parseSearcherEffect(card.effect);
                 if (searcherData) {
-                    const key = searcherData.types.sort().join('/');
+                    const key = `${searcherData.types.sort().join('/')}|${searcherData.look}`;
+                    
                     if (!searcherGroups.has(key)) {
                         searcherGroups.set(key, { 
                             look: searcherData.look, 
-                            types: searcherData.types, 
+                            types: searcherData.types,
                             targets: findSearcherTargets(searcherData.types).count
                         });
                     }
@@ -417,11 +436,28 @@
             let analysisHTML = '';
             if (searcherGroups.size > 0) {
                 let tableBodyHTML = '';
-                searcherGroups.forEach((group, key) => {
+                
+                const sortedGroups = Array.from(searcherGroups.entries()).sort((a, b) => {
+                    const typeCompare = a[0].split('|')[0].localeCompare(b[0].split('|')[0]);
+                    if (typeCompare !== 0) return typeCompare;
+                    return b[1].look - a[1].look;
+                });
+                
+                sortedGroups.forEach(([key, group]) => {
                     if (group.targets === 0) return;
-                    tableBodyHTML += `<tr><td class="prob-label">${group.types.join('/')} (${group.targets} targets)</td>`;
+                    
+                    const displayTypes = key.split('|')[0];
+                    
+                    tableBodyHTML += `<tr>
+                        <td class="prob-label">
+                            ${displayTypes} (${group.targets} targets, look ${group.look})
+                        </td>`;
+                    
                     for (let turn = 1; turn <= 10; turn++) {
-                        const deckSizeAfterDraw = 50 - (5 + (turn - 1));
+                        const deckSizeAfterDraw = goingSecond 
+                            ? 50 - (5 + turn)
+                            : 50 - (5 + (turn - 1));
+                        
                         const prob = probAtLeastOne(group.targets, deckSizeAfterDraw, group.look);
                         tableBodyHTML += `<td>${(prob * 100).toFixed(0)}%</td>`;
                     }
@@ -429,11 +465,15 @@
                 });
 
                 if (tableBodyHTML) {
-                    analysisHTML = `<h3>Searcher Analysis</h3>
+                    const scenario = goingSecond ? " (Going Second)" : " (Going First)";
+                    analysisHTML = `<h3>Searcher Analysis${scenario}</h3>
                                   <table class="searcher-table">
-                                      <thead><tr><th>Search Target (Hits)</th>` +
-                                      Array.from({length: 10}, (_, i) => `<th>Turn ${i+1}</th>`).join('') +
-                                      `</tr></thead>
+                                      <thead>
+                                          <tr>
+                                              <th>Search Target (Hits, Look)</th>
+                                              ${Array.from({length: 10}, (_, i) => `<th>Turn ${i+1}</th>`).join('')}
+                                          </tr>
+                                      </thead>
                                       <tbody>${tableBodyHTML}</tbody>
                                   </table>`;
                 }
@@ -463,6 +503,7 @@
             document.getElementById('searchBar').addEventListener('input', applyFilters);
             document.getElementById('cardsContainer').addEventListener('click', handleCardClick);
             document.getElementById('clearDeckBtn').addEventListener('click', clearDeck);
+            document.getElementById('goingSecondToggle').addEventListener('change', updateStatsView);
             document.getElementById('deckListContainer').addEventListener('click', (e) => {
                 const cardId = e.target.closest('.deck-grid-card')?.dataset.cardId;
                 if (cardId) changeCardQuantity(cardId, -1);
@@ -480,7 +521,7 @@
                 else if (state === 'no') { propertyFilterStates.delete(property); }
                 else { propertyFilterStates.set(property, 'has'); chip.classList.add('active'); }
                 applyFilters();
-};
+            };
 
             document.querySelectorAll('.color-chip').forEach(c => c.addEventListener('click', () => toggleFilter(c, selectedColors)));
             document.querySelectorAll('.cost-chip').forEach(c => c.addEventListener('click', () => toggleFilter(c, selectedCosts)));
@@ -493,4 +534,3 @@
     </script>
 </body>
 </html>
-
