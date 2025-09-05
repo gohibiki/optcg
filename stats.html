@@ -791,6 +791,43 @@ h1 img {
             return { id: cleanId, name: card ? card.name : cleanId, hasCard: !!card };
         }
 
+        function aggregateCardStats(leaderData) {
+            const cardStatsMap = new Map();
+
+            // Aggregate main card stats from 'subject' array
+            if (leaderData.subject && leaderData.subject.length > 1) {
+                for (let i = 1; i < leaderData.subject.length; i++) {
+                    const cardIdWithCount = leaderData.subject[i];
+                    const cleanId = cardIdWithCount.replace(/^\d+x/, '');
+                    
+                    if (!cardStatsMap.has(cleanId)) {
+                        cardStatsMap.set(cleanId, {
+                            idWithCount: cardIdWithCount, 
+                            presence: 0,
+                            subject_matches: 0,
+                            subject_wins: 0,
+                        });
+                    }
+
+                    const stats = cardStatsMap.get(cleanId);
+                    stats.presence += leaderData.presence[i] || 0;
+                    stats.subject_matches += leaderData.subject_matches[i] || 0;
+                    stats.subject_wins += leaderData.subject_wins[i] || 0;
+                }
+            }
+            
+            const aggregatedCardData = Array.from(cardStatsMap.values());
+            const aggregatedLeaderData = { ...leaderData };
+
+            aggregatedLeaderData.subject = [leaderData.subject[0], ...aggregatedCardData.map(c => c.idWithCount)];
+            aggregatedLeaderData.presence = [leaderData.presence[0], ...aggregatedCardData.map(c => c.presence)];
+            aggregatedLeaderData.subject_matches = [leaderData.subject_matches[0], ...aggregatedCardData.map(c => c.subject_matches)];
+            aggregatedLeaderData.subject_wins = [leaderData.subject_wins[0], ...aggregatedCardData.map(c => c.subject_wins)];
+            
+            return aggregatedLeaderData;
+        }
+
+
         function calculateAdvancedStats(leaderData, totalMatches) {
             let firstWins = 0, firstMatches = 0, secondWins = 0, secondMatches = 0;
             let mulliganFirst = 0, mulliganSecond = 0;
@@ -982,16 +1019,18 @@ h1 img {
 
                     const wins = leaderData.subject_wins[0];
                     const losses = totalMatches - wins;
+
+                    const aggregatedLeaderData = aggregateCardStats(leaderData);
                     
-                    const advancedStats = calculateAdvancedStats(leaderData, totalMatches);
+                    const advancedStats = calculateAdvancedStats(aggregatedLeaderData, totalMatches);
 
                     let playedCards = [];
-                    if (leaderData.subject && leaderData.subject.length > 1) {
-                        playedCards = leaderData.subject.map((cardIdWithCount, index) => {
+                    if (aggregatedLeaderData.subject && aggregatedLeaderData.subject.length > 1) {
+                        playedCards = aggregatedLeaderData.subject.map((cardIdWithCount, index) => {
                             const cardData = getCardInfo(cardIdWithCount);
-                            const presence = leaderData.presence[index]; 
-                            const inDecksCount = leaderData.subject_matches[index];
-                            const winsCount = leaderData.subject_wins[index];
+                            const presence = aggregatedLeaderData.presence[index]; 
+                            const inDecksCount = aggregatedLeaderData.subject_matches[index];
+                            const winsCount = aggregatedLeaderData.subject_wins[index];
                             
                             const avgCopies = totalMatches > 0 ? presence / totalMatches : 0;
                             const playRate = totalMatches > 0 ? (inDecksCount / totalMatches) * 100 : 0;
