@@ -110,7 +110,6 @@
         .cost-bar .bar-count { font-size: 10px; color: white; font-weight: bold; position: absolute; top: 2px; }
         .status { padding: 20px; text-align: center; font-weight: bold; }
         
-        /* --- NEW Searcher Analysis Styles --- */
         .searcher-analysis { margin-top: 20px; }
         .searcher-analysis h3 { font-size: 16px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
         .searcher-item { display: flex; gap: 15px; margin-bottom: 15px; align-items: flex-start; }
@@ -216,7 +215,7 @@
                             <div id="deckCardCount">Total Cards: 0 / 50</div>
                         </div>
                         <div class="cost-curve-container" id="costCurve"></div>
-                        <div class="cost-curve-labels" style="display: flex; gap: 4px; margin-top: 4px;"></div>
+                        <div id="costCurve-labels" class="cost-curve-labels" style="display: flex; gap: 4px; margin-top: 4px;"></div>
                     </div>
                 </div>
             </div>
@@ -367,14 +366,24 @@
             updateStatsView();
         }
 
-        // --- HYPERGEOMETRIC PROBABILITY FUNCTIONS ---
-        const f = (n) => (n < 2) ? 1 : n * f(n-1); // Factorial
-        const C = (n, k) => (k < 0 || k > n) ? 0 : f(n) / (f(k) * f(n - k)); // Combinations
+        const memoizedFactorial = (() => {
+            const cache = [1];
+            return (n) => {
+                if (n < 0) return NaN;
+                if (n >= cache.length) {
+                    for (let i = cache.length; i <= n; i++) {
+                        cache[i] = i * cache[i - 1];
+                    }
+                }
+                return cache[n];
+            };
+        })();
+        
+        const C = (n, k) => (k < 0 || k > n) ? 0 : memoizedFactorial(n) / (memoizedFactorial(k) * memoizedFactorial(n - k));
         const hypergeometric = (K, N, n, k) => C(K, k) * C(N - K, n - k) / C(N, n);
-        const probAtLeastOne = (successesInDeck, deckSize, draws) => {
-            if (deckSize <= 0 || draws <= 0 || successesInDeck <= 0) return 0;
-            const probOfZero = hypergeometric(successesInDeck, deckSize, draws, 0);
-            return 1 - probOfZero;
+        const probAtLeastOne = (successes, popSize, draws) => {
+            if (popSize <= 0 || draws <= 0 || successes <= 0) return 0;
+            return 1 - hypergeometric(successes, popSize, draws, 0);
         };
 
         function updateStatsView() {
@@ -382,7 +391,6 @@
             document.getElementById('deckCardCount').textContent = `Total Cards: ${totalCount} / ${DECK_SIZE}`;
             document.getElementById('deckCardCount').style.color = totalCount === DECK_SIZE ? '#27ae60' : (totalCount > DECK_SIZE ? '#e74c3c' : 'inherit');
             
-            // Cost Curve
             const costCurve = new Array(11).fill(0);
             deck.forEach((q, id) => {
                 const card = allCards.find(c => c.id === id);
@@ -392,56 +400,48 @@
             document.getElementById('costCurve').innerHTML = costCurve.map((c, i) => `<div class="cost-bar" style="height: ${(c / maxCount) * 100}%;">${c > 0 ? `<span class="bar-count">${c}</span>` : ''}</div>`).join('');
             document.getElementById('costCurve-labels').innerHTML = costCurve.map((_, i) => `<div class="cost-label" style="flex: 1;">${i === 10 ? '10+' : i}</div>`).join('');
 
-            // Searcher Analysis
             let searcherHTML = '';
-            const searchersInDeck = new Set();
+            const processedSearchers = new Set();
             deck.forEach((_, cardId) => {
                 const card = allCards.find(c => c.id === cardId);
                 const searcherData = parseSearcherEffect(card.effect);
-                if (searcherData && !searchersInDeck.has(card.id)) {
-                    searchersInDeck.add(card.id);
+                if (searcherData && !processedSearchers.has(card.id)) {
+                    processedSearchers.add(card.id);
                     const targets = findSearcherTargets(searcherData.types);
-                    let tableHTML = '<thead><tr><th>Turn</th>';
-                    for (let i = 1; i <= 10; i++) tableHTML += `<th>${i}</th>`;
-                    tableHTML += '</tr></thead><tbody><tr><td>Prob %</td>';
+                    if (targets.count === 0) return; 
+
+                    let tableHTML = '<thead><tr><th>Turn</th>' + Array.from({length: 10}, (_, i) => `<th>${i+1}</th>`).join('') + '</tr></thead>';
+                    tableHTML += '<tbody><tr><td>Prob %</td>';
                     
                     for (let turn = 1; turn <= 10; turn++) {
-                        const cardsSeen = 5 + turn; // 5 in hand + 1 per turn
-                        const deckSize = 50 - cardsSeen;
-                        const prob = probAtLeastOne(targets.count, deckSize, searcherData.look);
+                        const prob = probAtLeastOne(targets.count, 50 - (5 + turn), searcherData.look);
                         tableHTML += `<td>${(prob * 100).toFixed(0)}</td>`;
                     }
                     tableHTML += '</tr></tbody>';
 
                     searcherHTML += `<div class="searcher-item">
-                        <div class="searcher-image"><img src="${getImagePath(card)}"></div>
+                        <div class="searcher-image"><img src="${getImagePath(card)}" alt="${card.name}"></div>
                         <div class="searcher-table-container">
-                            <div class="searcher-info">Looks at <strong>${searcherData.look}</strong> cards for <strong>${targets.count}</strong> targets with type(s) <strong>{${searcherData.types.join(', ')}}</strong></div>
+                            <div class="searcher-info">Looks at <strong>${searcherData.look}</strong> for <strong>${targets.count}</strong> cards with type(s) <strong>{${searcherData.types.join(', ')}}</strong></div>
                             <table class="searcher-table">${tableHTML}</table>
                         </div>
                     </div>`;
                 }
             });
             const analysisContainer = document.getElementById('searcherAnalysis');
-            if (searcherHTML) {
-                analysisContainer.innerHTML = `<h3>Searcher Analysis</h3>${searcherHTML}`;
-            } else {
-                analysisContainer.innerHTML = '';
-            }
+            analysisContainer.innerHTML = searcherHTML ? `<h3>Searcher Analysis</h3>${searcherHTML}` : '';
         }
 
         function parseSearcherEffect(effectText) {
             const match = effectText.match(/(\d+)\s*cards from the top of your deck; reveal up to \d+\s*\{([^}]+)\}/);
-            if (!match) return null;
-            return { look: parseInt(match[1]), types: match[2].split('/').map(t => t.trim()) };
+            return match ? { look: parseInt(match[1]), types: match[2].split('/').map(t => t.trim()) } : null;
         }
 
         function findSearcherTargets(targetTypes) {
             let count = 0;
             deck.forEach((quantity, cardId) => {
                 const card = allCards.find(c => c.id === cardId);
-                const cardTypes = card.type.split('/');
-                if (targetTypes.some(tt => cardTypes.includes(tt))) {
+                if (targetTypes.some(tt => card.type.split('/').includes(tt))) {
                     count += quantity;
                 }
             });
