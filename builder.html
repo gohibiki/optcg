@@ -83,53 +83,25 @@
         .leader-slot { display: flex; align-items: center; gap: 15px; }
         .leader-image { width: 100px; height: 140px; border-radius: 6px; background: #f0f0f0; border: 2px dashed var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #999; flex-shrink: 0; overflow: hidden; }
         .leader-image img { width: 100%; height: 100%; object-fit: cover; }
-        .leader-info { display: flex; flex-direction: column; gap: 8px; }
-        .deck-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-        .deck-btn { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #f9f9f9; cursor: pointer; font-size: 12px; transition: background-color 0.2s; }
+        
+        /* --- NEW Header Layout Styles --- */
+        .leader-info { display: flex; flex-direction: row; flex-grow: 1; justify-content: space-between; align-items: center; }
+        .deck-type-stats { font-size: 14px; font-weight: bold; line-height: 1.6; }
+        .deck-actions { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+        .deck-btn { padding: 8px 12px; text-align: center; border-radius: 6px; border: 1px solid var(--border-color); background: #f9f9f9; cursor: pointer; font-size: 12px; transition: background-color 0.2s; }
         .deck-btn:hover { background: #f0f0f0; }
         .deck-btn.primary { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 
+        /* --- UPDATED Deck Grid Styles --- */
         .deck-list-container { overflow-y: auto; flex-grow: 1; padding: 15px; }
-        .deck-section h3 { margin: 0 0 10px 0; font-size: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
-        
-        /* --- NEW Deck Grid Styles --- */
-        .deck-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
-            gap: 12px;
-        }
-        .deck-grid-card {
-            position: relative;
-            cursor: pointer;
-            aspect-ratio: 0.714; /* TCG card aspect ratio */
-            transition: transform 0.1s ease-out;
-        }
-        .deck-grid-card:hover {
-            transform: scale(1.05);
-        }
-        .deck-grid-card img {
-            width: 100%;
-            height: 100%;
-            border-radius: 5px;
-            display: block;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
+        .deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 12px; }
+        .deck-grid-card { position: relative; cursor: pointer; aspect-ratio: 0.714; transition: transform 0.1s ease-out; }
+        .deck-grid-card:hover { transform: scale(1.05); }
+        .deck-grid-card img { width: 100%; height: 100%; border-radius: 5px; display: block; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
         .card-quantity-badge {
-            position: absolute;
-            bottom: -5px;
-            right: -5px;
-            background-color: rgba(25, 118, 210, 0.95); /* primary color */
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            border: 2px solid white;
-            pointer-events: none; /* So it doesn't interfere with the click */
+            position: absolute; bottom: -5px; right: -5px; background-color: rgba(25, 118, 210, 0.95);
+            color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: bold; border: 2px solid white; pointer-events: none;
         }
         
         .deck-footer { padding: 15px; border-top: 1px solid var(--border-color); background: #f8f9fa; }
@@ -138,7 +110,6 @@
         .cost-bar { flex: 1; background: var(--primary-color); border-radius: 3px 3px 0 0; position: relative; display: flex; flex-direction: column-reverse; align-items: center; }
         .cost-label { font-size: 10px; font-weight: bold; color: #666; text-align: center; }
         .cost-bar .bar-count { font-size: 10px; color: white; font-weight: bold; position: absolute; top: 2px; }
-
         .status { padding: 20px; text-align: center; font-weight: bold; }
     </style>
 </head>
@@ -213,28 +184,20 @@
                         <div class="leader-slot">
                             <div id="leaderImage" class="leader-image">LEADER</div>
                             <div class="leader-info">
-                                <h3>My Deck</h3>
+                                <div class="deck-type-stats">
+                                    <div>Characters: <span id="characterCount">0</span></div>
+                                    <div>Events: <span id="eventCount">0</span></div>
+                                    <div>Stages: <span id="stageCount">0</span></div>
+                                </div>
                                 <div class="deck-actions">
-                                    <button class="deck-btn primary" id="clearDeckBtn">Clear Deck</button>
-                                    <button class="deck-btn" title="Functionality coming soon!">Save</button>
                                     <button class="deck-btn" title="Functionality coming soon!">Export</button>
+                                    <button class="deck-btn primary" id="clearDeckBtn">Clear Deck</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div id="deckListContainer" class="deck-list-container">
-                        <div class="deck-section" id="charactersSection">
-                            <h3>Characters (<span id="characterCount">0</span>)</h3>
-                            <div id="characterList" class="deck-grid"></div>
-                        </div>
-                        <div class="deck-section" id="eventsSection">
-                            <h3>Events (<span id="eventCount">0</span>)</h3>
-                            <div id="eventList" class="deck-grid"></div>
-                        </div>
-                        <div class="deck-section" id="stagesSection">
-                            <h3>Stages (<span id="stageCount">0</span>)</h3>
-                            <div id="stageList" class="deck-grid"></div>
-                        </div>
+                        <div id="deckGrid" class="deck-grid"></div>
                     </div>
                     <div class="deck-footer">
                         <div class="deck-stats">
@@ -407,22 +370,27 @@
         }
 
         function updateDeckListView() {
-            const lists = { CHARACTER: '', EVENT: '', STAGE: '' };
             const counts = { CHARACTER: 0, EVENT: 0, STAGE: 0 };
-            
+            const typeOrder = { 'CHARACTER': 1, 'EVENT': 2, 'STAGE': 3 };
+            let deckGridHTML = '';
+
             const sortedDeck = Array.from(deck.keys())
                 .map(id => allCards.find(c => c.id === id))
-                .sort((a, b) => (a.cost ?? 0) - (b.cost ?? 0) || a.name.localeCompare(b.name));
+                .sort((a, b) => {
+                    const typeDiff = typeOrder[a.cardType] - typeOrder[b.cardType];
+                    if (typeDiff !== 0) return typeDiff;
+                    const costDiff = (a.cost ?? 0) - (b.cost ?? 0);
+                    if (costDiff !== 0) return costDiff;
+                    return a.name.localeCompare(b.name);
+                });
 
             sortedDeck.forEach(card => {
                 const quantity = deck.get(card.id);
-                lists[card.cardType] += createDeckGridCardElement(card, quantity);
+                deckGridHTML += createDeckGridCardElement(card, quantity);
                 counts[card.cardType] += quantity;
             });
-
-            document.getElementById('characterList').innerHTML = lists.CHARACTER;
-            document.getElementById('eventList').innerHTML = lists.EVENT;
-            document.getElementById('stageList').innerHTML = lists.STAGE;
+            
+            document.getElementById('deckGrid').innerHTML = deckGridHTML;
             document.getElementById('characterCount').textContent = counts.CHARACTER;
             document.getElementById('eventCount').textContent = counts.EVENT;
             document.getElementById('stageCount').textContent = counts.STAGE;
