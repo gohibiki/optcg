@@ -382,7 +382,7 @@
         const C = (n, k) => (k < 0 || k > n) ? 0 : memoizedFactorial(n) / (memoizedFactorial(k) * memoizedFactorial(n - k));
         const hypergeometric = (K, N, n, k) => C(K, k) * C(N - K, n - k) / C(N, n);
         const probAtLeastOne = (successes, popSize, draws) => {
-            if (popSize <= 0 || draws <= 0 || successes <= 0) return 0;
+            if (popSize <= 0 || draws <= 0 || successes <= 0 || draws > popSize) return 0;
             return 1 - hypergeometric(successes, popSize, draws, 0);
         };
 
@@ -408,13 +408,14 @@
                 if (searcherData && !processedSearchers.has(card.id)) {
                     processedSearchers.add(card.id);
                     const targets = findSearcherTargets(searcherData.types);
-                    if (targets.count === 0) return; 
+                    if (targets.count === 0) return;
 
                     let tableHTML = '<thead><tr><th>Turn</th>' + Array.from({length: 10}, (_, i) => `<th>${i+1}</th>`).join('') + '</tr></thead>';
                     tableHTML += '<tbody><tr><td>Prob %</td>';
                     
                     for (let turn = 1; turn <= 10; turn++) {
-                        const prob = probAtLeastOne(targets.count, 50 - (5 + turn), searcherData.look);
+                        const deckSizeOnTurn = 50 - (5 + (turn - 1));
+                        const prob = probAtLeastOne(targets.count, deckSizeOnTurn, searcherData.look);
                         tableHTML += `<td>${(prob * 100).toFixed(0)}</td>`;
                     }
                     tableHTML += '</tr></tbody>';
@@ -433,7 +434,7 @@
         }
 
         function parseSearcherEffect(effectText) {
-            const match = effectText.match(/(\d+)\s*cards from the top of your deck; reveal up to \d+\s*\{([^}]+)\}/);
+            const match = effectText.match(/(?:look at |look at up to )?(\d+)\s*cards from the top of your deck.*?reveal up to \d+.*?\{([^}]+)\}/i);
             return match ? { look: parseInt(match[1]), types: match[2].split('/').map(t => t.trim()) } : null;
         }
 
