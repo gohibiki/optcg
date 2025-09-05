@@ -1,29 +1,17 @@
-import { URL } from 'url';
+// File: /api/get-cards.js
 
 export default async function handler(request, response) {
   try {
-    // Get the 'set' query parameter from the request URL
-    const requestUrl = new URL(request.url, `http://${request.headers.host}`);
-    const setNumber = requestUrl.searchParams.get('set');
-
-    if (!setNumber) {
-      return response.status(400).json({ error: 'Set number parameter is required.' });
-    }
-
-    // Construct the real (and hidden) API URL
-    const apiUrl = `https://opbountypck.s3.us-east-1.amazonaws.com/stats/regular/Stats_OP${setNumber}.json`;
-    
-    const apiResponse = await fetch(apiUrl);
+    const apiURL = 'https://api.dotgg.gg/cgfw/getcards?game=onepiece&mode=indexed&cache=6360';
+    const apiResponse = await fetch(apiURL);
 
     if (!apiResponse.ok) {
-      return response.status(apiResponse.status).json({ error: 'Failed to fetch stats data.' });
+      return response.status(apiResponse.status).json({ error: 'Failed to fetch from external API' });
     }
 
-    // The data is text that needs to be decoded on the client, so we pass it as text
-    const rawData = await apiResponse.text();
-    
+    const data = await apiResponse.json();
     response.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
-    response.status(200).send(rawData);
+    response.status(200).json(data);
 
   } catch (error) {
     response.status(500).json({ error: 'Internal Server Error' });
