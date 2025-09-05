@@ -759,9 +759,9 @@ h1 img {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 cardsDatabase = data.data.map(cardArray => ({
-                    id: cardArray[0] || 'N/A',
-                    name: cardArray[4] || 'N/A',
-                })).filter(card => card.name !== 'N/A' && !card.id.includes('_'));
+                    id: cardArray[0] || '-',
+                    name: cardArray[4] || '-',
+                })).filter(card => card.name !== '-' && !card.id.includes('_'));
                 isCardsDbLoaded = true;
             } catch (error) {
                 console.error('Error loading cards database:', error);
@@ -1328,10 +1328,10 @@ h1 img {
                             `;
 
                         } else {
-                            dataCell.textContent = 'N/A';
+                            dataCell.textContent = '-';
                         }
                     } else {
-                        dataCell.textContent = 'N/A';
+                        dataCell.textContent = '-';
                     }
                     container.appendChild(dataCell);
                 });
