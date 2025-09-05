@@ -13,12 +13,6 @@
             --primary-color: #1976d2;
             --border-color: #ddd;
             --shadow-color: rgba(0,0,0,0.1);
-            --red-color: #e74c3c;
-            --green-color: #27ae60;
-            --blue-color: #3498db;
-            --purple-color: #9b59b6;
-            --black-color: #34495e;
-            --yellow-color: #f1c40f;
         }
 
         body {
@@ -42,16 +36,7 @@
             box-sizing: border-box;
         }
 
-        .main-nav {
-            background-color: var(--surface-color);
-            border-radius: 8px;
-            box-shadow: 0 2px 4px var(--shadow-color);
-            margin-bottom: 20px;
-            padding: 10px 0px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
+        .main-nav { background-color: var(--surface-color); border-radius: 8px; box-shadow: 0 2px 4px var(--shadow-color); margin-bottom: 20px; padding: 10px 0px; width: 100%; box-sizing: border-box; }
         .main-nav ul { list-style: none; margin: 0; padding: 0; display: flex; justify-content: flex-start; }
         .main-nav li a { text-decoration: none; color: var(--text-color); font-weight: bold; font-size: 16px; padding: 10px 15px; border-radius: 6px; transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; }
         .main-nav li a:hover, .main-nav li a.active { background-color: #e3f2fd; color: var(--primary-color); }
@@ -83,9 +68,7 @@
         .cost-chip { background: linear-gradient(135deg, #6c757d, #495057); }
         .type-chip { background: linear-gradient(135deg, #17a2b8, #117a8b); }
         .counter-chip { background: linear-gradient(135deg, #ffc107, #e0a800); }
-        .property-chip {
-            background: linear-gradient(135deg, #6c757d, #495057); width: auto; height: 26px; padding: 0 10px; border-radius: 13px;
-        }
+        .property-chip { background: linear-gradient(135deg, #6c757d, #495057); width: auto; height: 26px; padding: 0 10px; border-radius: 13px; }
         .property-chip.active { background: linear-gradient(135deg, #28a745, #218838); border-color: #155724; }
         .property-chip.inverse { background: linear-gradient(135deg, #dc3545, #c82333); border-color: #721c24; }
         
@@ -108,15 +91,47 @@
 
         .deck-list-container { overflow-y: auto; flex-grow: 1; padding: 15px; }
         .deck-section h3 { margin: 0 0 10px 0; font-size: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
-        .deck-card { display: flex; align-items: center; gap: 8px; padding: 5px; font-size: 14px; border-radius: 4px; }
-        .deck-card:hover { background-color: #f5f5f5; }
-        .deck-card-image { width: 40px; height: 56px; flex-shrink: 0; border-radius: 4px; overflow: hidden; background-color: #f0f0f0; }
-        .deck-card-image img { width: 100%; height: 100%; object-fit: cover; }
-        .deck-card .cost-color { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.5); font-size: 12px; flex-shrink: 0; }
-        .deck-card .card-name { flex-grow: 1; font-weight: 500;}
-        .quantity-controls { display: flex; align-items: center; gap: 8px; }
-        .quantity-btn { width: 22px; height: 22px; border: 1px solid var(--border-color); border-radius: 50%; background: white; cursor: pointer; font-weight: bold; }
-
+        
+        /* --- NEW Deck Grid Styles --- */
+        .deck-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+            gap: 12px;
+        }
+        .deck-grid-card {
+            position: relative;
+            cursor: pointer;
+            aspect-ratio: 0.714; /* TCG card aspect ratio */
+            transition: transform 0.1s ease-out;
+        }
+        .deck-grid-card:hover {
+            transform: scale(1.05);
+        }
+        .deck-grid-card img {
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+            display: block;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .card-quantity-badge {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background-color: rgba(25, 118, 210, 0.95); /* primary color */
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid white;
+            pointer-events: none; /* So it doesn't interfere with the click */
+        }
+        
         .deck-footer { padding: 15px; border-top: 1px solid var(--border-color); background: #f8f9fa; }
         .deck-stats { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 14px; font-weight: bold; }
         .cost-curve-container { display: flex; gap: 4px; align-items: flex-end; height: 60px; }
@@ -138,7 +153,6 @@
         </nav>
 
         <div class="deck-builder-layout">
-            <!-- Card Pool Column -->
             <div class="card-pool-column">
                 <div class="controls">
                     <input type="text" id="searchBar" class="search-bar" placeholder="Search cards by name, type, color, or effect...">
@@ -193,7 +207,6 @@
                 </div>
             </div>
 
-            <!-- Deck Area Column -->
             <div class="deck-area-column">
                 <div class="deck-area-content">
                     <div class="deck-header">
@@ -212,15 +225,15 @@
                     <div id="deckListContainer" class="deck-list-container">
                         <div class="deck-section" id="charactersSection">
                             <h3>Characters (<span id="characterCount">0</span>)</h3>
-                            <div id="characterList"></div>
+                            <div id="characterList" class="deck-grid"></div>
                         </div>
                         <div class="deck-section" id="eventsSection">
                             <h3>Events (<span id="eventCount">0</span>)</h3>
-                            <div id="eventList"></div>
+                            <div id="eventList" class="deck-grid"></div>
                         </div>
                         <div class="deck-section" id="stagesSection">
                             <h3>Stages (<span id="stageCount">0</span>)</h3>
-                            <div id="stageList"></div>
+                            <div id="stageList" class="deck-grid"></div>
                         </div>
                     </div>
                     <div class="deck-footer">
@@ -403,7 +416,7 @@
 
             sortedDeck.forEach(card => {
                 const quantity = deck.get(card.id);
-                lists[card.cardType] += createDeckCardElement(card, quantity);
+                lists[card.cardType] += createDeckGridCardElement(card, quantity);
                 counts[card.cardType] += quantity;
             });
 
@@ -415,20 +428,12 @@
             document.getElementById('stageCount').textContent = counts.STAGE;
         }
 
-        function createDeckCardElement(card, quantity) {
+        function createDeckGridCardElement(card, quantity) {
             const imagePath = getImagePath(card);
-            const primaryColor = card.color.split('/')[0].toLowerCase();
-            const costColorStyle = `background: var(--${primaryColor}-color);`;
             return `
-                <div class="deck-card">
-                    <div class="deck-card-image"><img src="${imagePath}" loading="lazy" onerror="this.style.display='none';"></div>
-                    <div class="cost-color" style="${costColorStyle}">${card.cost ?? '0'}</div>
-                    <div class="card-name">${card.name}</div>
-                    <div class="quantity-controls">
-                        <button class="quantity-btn minus-btn" data-card-id="${card.id}">-</button>
-                        <span>${quantity}</span>
-                        <button class="quantity-btn plus-btn" data-card-id="${card.id}">+</button>
-                    </div>
+                <div class="deck-grid-card" data-card-id="${card.id}" title="${card.name} (Cost: ${card.cost ?? 'N/A'})">
+                    <img src="${imagePath}" loading="lazy" onerror="this.style.display='none'; this.parentElement.style.border='1px solid #ccc';">
+                    <div class="card-quantity-badge">x${quantity}</div>
                 </div>`;
         }
 
@@ -436,7 +441,7 @@
             const totalCount = Array.from(deck.values()).reduce((sum, count) => sum + count, 0);
             const countEl = document.getElementById('deckCardCount');
             countEl.textContent = `Total Cards: ${totalCount} / ${DECK_SIZE}`;
-            countEl.style.color = totalCount === DECK_SIZE ? 'var(--green-color)' : (totalCount > DECK_SIZE ? 'var(--red-color)' : 'inherit');
+            countEl.style.color = totalCount === DECK_SIZE ? '#27ae60' : (totalCount > DECK_SIZE ? '#e74c3c' : 'inherit');
             
             const costCurve = new Array(11).fill(0);
             deck.forEach((quantity, cardId) => {
@@ -465,10 +470,11 @@
             document.getElementById('clearDeckBtn').addEventListener('click', clearDeck);
             
             document.getElementById('deckListContainer').addEventListener('click', (e) => {
-                const cardId = e.target.dataset.cardId;
-                if (!cardId) return;
-                if (e.target.classList.contains('minus-btn')) changeCardQuantity(cardId, -1);
-                else if (e.target.classList.contains('plus-btn')) addCardToDeck(allCards.find(c => c.id === cardId));
+                const cardEl = e.target.closest('.deck-grid-card');
+                const cardId = cardEl?.dataset.cardId;
+                if (cardId) {
+                    changeCardQuantity(cardId, -1);
+                }
             });
 
             const toggleFilter = (chip, collection) => {
@@ -505,4 +511,3 @@
     </script>
 </body>
 </html>
-
