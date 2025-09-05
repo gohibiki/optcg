@@ -35,14 +35,13 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            max-width: 1600px;
+            max-width: 1800px;
             width: 100%;
             margin: 0 auto;
             padding: 0 20px;
             box-sizing: border-box;
         }
 
-        /* --- Navigation Menu Styles --- */
         .main-nav {
             background-color: var(--surface-color);
             border-radius: 8px;
@@ -53,241 +52,77 @@
             box-sizing: border-box;
         }
 
-        .main-nav ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: flex-start;
-        }
+        .main-nav ul { list-style: none; margin: 0; padding: 0; display: flex; justify-content: flex-start; }
+        .main-nav li a { text-decoration: none; color: var(--text-color); font-weight: bold; font-size: 16px; padding: 10px 15px; border-radius: 6px; transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; }
+        .main-nav li a:hover, .main-nav li a.active { background-color: #e3f2fd; color: var(--primary-color); }
 
-        .main-nav li a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: bold;
-            font-size: 16px;
-            padding: 10px 15px;
-            border-radius: 6px;
-            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-        }
+        .deck-builder-layout { display: flex; gap: 20px; flex-grow: 1; overflow: hidden; }
+        .card-pool-column { flex: 2; display: flex; flex-direction: column; min-width: 0; }
+        .deck-area-column { flex: 2.5; display: flex; flex-direction: column; height: calc(100vh - 100px); position: sticky; top: 20px; }
 
-        .main-nav li a:hover, .main-nav li a.active {
-            background-color: #e3f2fd;
-            color: var(--primary-color);
-        }
-
-        /* --- Main Layout --- */
-        .deck-builder-layout {
-            display: flex;
-            gap: 20px;
-            flex-grow: 1;
-            overflow: hidden;
-        }
-
-        .card-pool-column {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-        }
+        .controls { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+        .search-bar { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; }
         
-        .deck-area-column {
-            flex: 2;
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 100px); /* Adjust based on nav height */
-            position: sticky;
-            top: 20px;
-        }
+        .filters-container { display: flex; flex-direction: column; gap: 10px; }
+        .filters-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .filter-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 4px 8px; background: rgba(0,0,0,0.02); border-radius: 6px; border: 1px solid #eee;}
 
-        /* --- Card Pool (Left Column) --- */
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .search-bar {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-
-        .filters-row {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
         .filter-chip {
-            width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent;
-            cursor: pointer; transition: all 0.2s ease;
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center; box-sizing: border-box; font-size: 11px; font-weight: bold;
+            color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
         }
-        .filter-chip.active {
-            border-color: #333; box-shadow: 0 0 0 1px #fff, 0 0 0 3px #333; transform: scale(1.1);
+        .filter-chip:hover { transform: scale(1.05); }
+        .filter-chip.active { border-color: #333; box-shadow: 0 0 0 1px #fff, 0 0 0 3px #333; transform: scale(1.1); }
+        .color-chip.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .color-chip.green { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        .color-chip.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .color-chip.purple { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .color-chip.black { background: linear-gradient(135deg, #34495e, #2c3e50); }
+        .color-chip.yellow { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+        .cost-chip { background: linear-gradient(135deg, #6c757d, #495057); }
+        .type-chip { background: linear-gradient(135deg, #17a2b8, #117a8b); }
+        .counter-chip { background: linear-gradient(135deg, #ffc107, #e0a800); }
+        .property-chip {
+            background: linear-gradient(135deg, #6c757d, #495057); width: auto; height: 26px; padding: 0 10px; border-radius: 13px;
         }
-        .color-chip.red { background: var(--red-color); }
-        .color-chip.green { background: var(--green-color); }
-        .color-chip.blue { background: var(--blue-color); }
-        .color-chip.purple { background: var(--purple-color); }
-        .color-chip.black { background: var(--black-color); }
-        .color-chip.yellow { background: var(--yellow-color); }
+        .property-chip.active { background: linear-gradient(135deg, #28a745, #218838); border-color: #155724; }
+        .property-chip.inverse { background: linear-gradient(135deg, #dc3545, #c82333); border-color: #721c24; }
         
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 15px;
-            overflow-y: auto;
-            flex-grow: 1;
-            padding-right: 10px;
-        }
-        .card-item {
-            cursor: pointer;
-            transition: transform 0.2s;
-            position: relative;
-        }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; overflow-y: auto; flex-grow: 1; padding-right: 10px; }
+        .card-item { cursor: pointer; transition: transform 0.2s; position: relative; }
         .card-item:hover { transform: scale(1.03); }
         .card-item img { width: 100%; height: auto; border-radius: 6px; display: block; }
         .card-item .no-image { width: 100%; aspect-ratio: 0.71; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #999; text-align: center; }
 
-        /* --- Deck Area (Right Column) --- */
-        .deck-area-content {
-            background: var(--surface-color);
-            border-radius: 8px;
-            box-shadow: 0 2px 4px var(--shadow-color);
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            overflow: hidden;
-        }
-
+        .deck-area-content { background: var(--surface-color); border-radius: 8px; box-shadow: 0 2px 4px var(--shadow-color); display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
         .deck-header { padding: 15px; border-bottom: 1px solid var(--border-color); }
-        .leader-slot {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        .leader-image {
-            width: 100px;
-            height: 140px;
-            border-radius: 6px;
-            background: #f0f0f0;
-            border: 2px dashed var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #999;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
+        .leader-slot { display: flex; align-items: center; gap: 15px; }
+        .leader-image { width: 100px; height: 140px; border-radius: 6px; background: #f0f0f0; border: 2px dashed var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #999; flex-shrink: 0; overflow: hidden; }
         .leader-image img { width: 100%; height: 100%; object-fit: cover; }
-        .leader-info {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .deck-name-input {
-            width: 100%;
-            padding: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-bottom: 2px solid var(--border-color);
-            transition: border-color 0.2s;
-        }
-        .deck-name-input:focus { outline: none; border-color: var(--primary-color); }
-        
+        .leader-info { display: flex; flex-direction: column; gap: 8px; }
         .deck-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-        .deck-btn {
-            padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #f9f9f9;
-            cursor: pointer; font-size: 12px; transition: background-color 0.2s;
-        }
+        .deck-btn { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: #f9f9f9; cursor: pointer; font-size: 12px; transition: background-color 0.2s; }
         .deck-btn:hover { background: #f0f0f0; }
         .deck-btn.primary { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 
-        .deck-list-container {
-            overflow-y: auto;
-            flex-grow: 1;
-            padding: 15px;
-        }
-        .deck-section h3 {
-            margin: 0 0 10px 0; font-size: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;
-        }
-        .deck-card {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 5px;
-            font-size: 14px;
-            border-radius: 4px;
-        }
+        .deck-list-container { overflow-y: auto; flex-grow: 1; padding: 15px; }
+        .deck-section h3 { margin: 0 0 10px 0; font-size: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        .deck-card { display: flex; align-items: center; gap: 8px; padding: 5px; font-size: 14px; border-radius: 4px; }
         .deck-card:hover { background-color: #f5f5f5; }
-        
-        .deck-card-image {
-            width: 40px;
-            height: 56px;
-            flex-shrink: 0;
-            border-radius: 4px;
-            overflow: hidden;
-            background-color: #f0f0f0;
-        }
-        .deck-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .deck-card .cost-color {
-            width: 22px; height: 22px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
-            font-size: 12px;
-            flex-shrink: 0;
-        }
+        .deck-card-image { width: 40px; height: 56px; flex-shrink: 0; border-radius: 4px; overflow: hidden; background-color: #f0f0f0; }
+        .deck-card-image img { width: 100%; height: 100%; object-fit: cover; }
+        .deck-card .cost-color { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.5); font-size: 12px; flex-shrink: 0; }
         .deck-card .card-name { flex-grow: 1; font-weight: 500;}
-
         .quantity-controls { display: flex; align-items: center; gap: 8px; }
-        .quantity-btn {
-            width: 22px; height: 22px; border: 1px solid var(--border-color); border-radius: 50%;
-            background: white; cursor: pointer; font-weight: bold;
-        }
+        .quantity-btn { width: 22px; height: 22px; border: 1px solid var(--border-color); border-radius: 50%; background: white; cursor: pointer; font-weight: bold; }
 
-        .deck-footer {
-            padding: 15px;
-            border-top: 1px solid var(--border-color);
-            background: #f8f9fa;
-        }
-
-        .deck-stats {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        
+        .deck-footer { padding: 15px; border-top: 1px solid var(--border-color); background: #f8f9fa; }
+        .deck-stats { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 14px; font-weight: bold; }
         .cost-curve-container { display: flex; gap: 4px; align-items: flex-end; height: 60px; }
-        .cost-bar {
-            flex: 1;
-            background: var(--primary-color);
-            border-radius: 3px 3px 0 0;
-            position: relative;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-        }
+        .cost-bar { flex: 1; background: var(--primary-color); border-radius: 3px 3px 0 0; position: relative; display: flex; flex-direction: column-reverse; align-items: center; }
         .cost-label { font-size: 10px; font-weight: bold; color: #666; text-align: center; }
-        .cost-bar .bar-count {
-            font-size: 10px; color: white; font-weight: bold;
-            position: absolute; top: 2px;
-        }
+        .cost-bar .bar-count { font-size: 10px; color: white; font-weight: bold; position: absolute; top: 2px; }
 
         .status { padding: 20px; text-align: center; font-weight: bold; }
     </style>
@@ -303,17 +138,53 @@
         </nav>
 
         <div class="deck-builder-layout">
+            <!-- Card Pool Column -->
             <div class="card-pool-column">
                 <div class="controls">
-                    <input type="text" id="searchBar" class="search-bar" placeholder="Search cards...">
-                    <div class="filters-row">
-                        <div class="color-filter">
-                            <div class="filter-chip color-chip red" data-color="Red"></div>
-                            <div class="filter-chip color-chip green" data-color="Green"></div>
-                            <div class="filter-chip color-chip blue" data-color="Blue"></div>
-                            <div class="filter-chip color-chip purple" data-color="Purple"></div>
-                            <div class="filter-chip color-chip black" data-color="Black"></div>
-                            <div class="filter-chip color-chip yellow" data-color="Yellow"></div>
+                    <input type="text" id="searchBar" class="search-bar" placeholder="Search cards by name, type, color, or effect...">
+                     <div class="filters-container">
+                        <div class="filters-row">
+                            <div class="filter-group color-filter">
+                                <div class="filter-chip color-chip red" data-color="Red"></div>
+                                <div class="filter-chip color-chip green" data-color="Green"></div>
+                                <div class="filter-chip color-chip blue" data-color="Blue"></div>
+                                <div class="filter-chip color-chip purple" data-color="Purple"></div>
+                                <div class="filter-chip color-chip black" data-color="Black"></div>
+                                <div class="filter-chip color-chip yellow" data-color="Yellow"></div>
+                            </div>
+                            <div class="filter-group type-filter">
+                                <div class="filter-chip type-chip" data-type="LEADER">L</div>
+                                <div class="filter-chip type-chip" data-type="CHARACTER">C</div>
+                                <div class="filter-chip type-chip" data-type="EVENT">E</div>
+                                <div class="filter-chip type-chip" data-type="STAGE">S</div>
+                            </div>
+                            <div class="filter-group counter-filter">
+                                <div class="filter-chip counter-chip" data-counter="0">0k</div>
+                                <div class="filter-chip counter-chip" data-counter="1000">1k</div>
+                                <div class="filter-chip counter-chip" data-counter="2000">2k</div>
+                            </div>
+                        </div>
+                        <div class="filters-row">
+                            <div class="filter-group property-filter">
+                                <div class="filter-chip property-chip" data-property="effect">Effect</div>
+                                <div class="filter-chip property-chip" data-property="on_play">On Play</div>
+                                <div class="filter-chip property-chip" data-property="trigger">Trigger</div>
+                                <div class="filter-chip property-chip" data-property="when_attacking">W/ ATK</div>
+                                <div class="filter-chip property-chip" data-property="blocker">Blocker</div>
+                            </div>
+                             <div class="filter-group cost-filter">
+                                <div class="filter-chip cost-chip" data-cost="0">0</div>
+                                <div class="filter-chip cost-chip" data-cost="1">1</div>
+                                <div class="filter-chip cost-chip" data-cost="2">2</div>
+                                <div class="filter-chip cost-chip" data-cost="3">3</div>
+                                <div class="filter-chip cost-chip" data-cost="4">4</div>
+                                <div class="filter-chip cost-chip" data-cost="5">5</div>
+                                <div class="filter-chip cost-chip" data-cost="6">6</div>
+                                <div class="filter-chip cost-chip" data-cost="7">7</div>
+                                <div class="filter-chip cost-chip" data-cost="8">8</div>
+                                <div class="filter-chip cost-chip" data-cost="9">9</div>
+                                <div class="filter-chip cost-chip" data-cost="10">10</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -322,13 +193,14 @@
                 </div>
             </div>
 
+            <!-- Deck Area Column -->
             <div class="deck-area-column">
                 <div class="deck-area-content">
                     <div class="deck-header">
                         <div class="leader-slot">
                             <div id="leaderImage" class="leader-image">LEADER</div>
                             <div class="leader-info">
-                                <input type="text" id="deckName" class="deck-name-input" placeholder="Enter Deck Name">
+                                <h3>My Deck</h3>
                                 <div class="deck-actions">
                                     <button class="deck-btn primary" id="clearDeckBtn">Clear Deck</button>
                                     <button class="deck-btn" title="Functionality coming soon!">Save</button>
@@ -355,10 +227,8 @@
                         <div class="deck-stats">
                             <div id="deckCardCount">Total Cards: 0 / 50</div>
                         </div>
-                        <div class="cost-curve-container" id="costCurve">
-                           </div>
-                        <div class="cost-curve-labels" style="display: flex; gap: 4px; margin-top: 4px;">
-                           </div>
+                        <div class="cost-curve-container" id="costCurve"></div>
+                        <div class="cost-curve-labels" style="display: flex; gap: 4px; margin-top: 4px;"></div>
                     </div>
                 </div>
             </div>
@@ -368,14 +238,18 @@
     <script>
         let allCards = [];
         let filteredCards = [];
-        
-        let deck = new Map(); // card.id -> quantity
+        let deck = new Map();
         let leader = null;
 
         const DECK_SIZE = 50;
         const MAX_COPIES = 4;
 
-        // --- DATA LOADING & INITIALIZATION ---
+        let selectedColors = new Set();
+        let selectedCosts = new Set();
+        let selectedTypes = new Set();
+        let selectedCounters = new Set();
+        let propertyFilterStates = new Map();
+
         async function initializeDeckBuilder() {
             await loadCards();
             setupEventListeners();
@@ -392,7 +266,7 @@
                 allCards = data.data.map(c => ({
                     id: c[0] || 'N/A', rarity: c[2] || 'N/A', cardType: c[3] || 'N/A', name: c[4] || 'N/A',
                     cost: (c[5] !== null && c[5] !== undefined) ? parseInt(c[5]) : null,
-                    power: c[7], counter: c[8], color: c[9] || 'N/A', effect: c[11]
+                    power: c[7], counter: c[8], color: c[9] || 'N/A', effect: c[11], trigger: c[14]
                 })).filter(card => card.name && card.name.trim() !== '' && !card.id.includes('_'));
 
                 statusEl.style.display = 'none';
@@ -403,19 +277,38 @@
             }
         }
 
-        // --- CARD POOL FILTERING & RENDERING ---
-        let selectedColors = new Set();
-
         function applyFilters() {
             const searchTerm = document.getElementById('searchBar').value.toLowerCase();
             
             filteredCards = allCards.filter(card => {
                 const matchesSearch = searchTerm === '' || card.name.toLowerCase().includes(searchTerm) || card.effect?.toLowerCase().includes(searchTerm);
                 const matchesColor = selectedColors.size === 0 || Array.from(selectedColors).some(c => card.color?.includes(c));
+                const matchesCost = selectedCosts.size === 0 || (card.cardType !== 'LEADER' && selectedCosts.has(String(card.cost)));
+                const matchesType = selectedTypes.size === 0 || selectedTypes.has(card.cardType);
+                const matchesCounter = selectedCounters.size === 0 || (card.cardType === 'CHARACTER' && selectedCounters.has(String(card.counter ?? 0)));
+
+                let matchesProperties = true;
+                if (propertyFilterStates.size > 0) {
+                    matchesProperties = Array.from(propertyFilterStates.entries()).every(([prop, state]) => {
+                        const hasEffect = card.effect && card.effect.trim() !== '';
+                        const effectText = hasEffect ? card.effect.toLowerCase() : '';
+                        const hasTrigger = card.trigger && card.trigger.trim() !== '';
+                        
+                        const propertyExists = {
+                            effect: hasEffect,
+                            on_play: effectText.includes('[on play]'),
+                            trigger: hasTrigger,
+                            when_attacking: effectText.includes('[when attacking]'),
+                            blocker: effectText.includes('[blocker]')
+                        }[prop];
+
+                        return state === 'has' ? propertyExists : !propertyExists;
+                    });
+                }
                 
                 const matchesLeaderColor = !leader || card.cardType === 'LEADER' || leader.color.split('/').some(lc => card.color?.includes(lc));
 
-                return matchesSearch && matchesColor && matchesLeaderColor;
+                return matchesSearch && matchesColor && matchesCost && matchesType && matchesCounter && matchesProperties && matchesLeaderColor;
             });
             
             renderCardPool();
@@ -424,58 +317,32 @@
         function renderCardPool() {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = '';
-            
-            if (filteredCards.length === 0) {
-                 container.innerHTML = `<div class="status">No cards match your filters.</div>`;
-            }
-
+            if (filteredCards.length === 0) container.innerHTML = `<div class="status">No cards match your filters.</div>`;
             filteredCards.slice(0, 100).forEach(card => {
                 const cardEl = document.createElement('div');
                 cardEl.className = 'card-item';
                 cardEl.dataset.cardId = card.id;
-
                 const imagePath = getImagePath(card);
-                const imageHTML = imagePath ? `<img src="${imagePath}" alt="${card.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;no-image&quot;>${card.name}</div>'">` : `<div class="no-image">${card.name}</div>`;
-                cardEl.innerHTML = imageHTML;
-                
+                cardEl.innerHTML = imagePath ? `<img src="${imagePath}" alt="${card.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;no-image&quot;>${card.name}</div>'">` : `<div class="no-image">${card.name}</div>`;
                 container.appendChild(cardEl);
             });
         }
         
         function getImagePath(card) {
-            let setName;
-            if (card.id.startsWith('P-')) setName = 'P';
-            else {
-                const setMatch = card.id.match(/^([A-Z]+\d+)/);
-                if (!setMatch) return null;
-                setName = setMatch[1];
-            }
-            return `Cards/${setName}/${card.id}.webp`;
+            let setName = card.id.startsWith('P-') ? 'P' : card.id.match(/^([A-Z]+\d+)/)?.[1];
+            return setName ? `Cards/${setName}/${card.id}.webp` : null;
         }
 
-        // --- DECK MANAGEMENT LOGIC ---
-
         function handleCardClick(event) {
-            const cardEl = event.target.closest('.card-item');
-            if (!cardEl) return;
-
-            const cardId = cardEl.dataset.cardId;
+            const cardId = event.target.closest('.card-item')?.dataset.cardId;
+            if (!cardId) return;
             const card = allCards.find(c => c.id === cardId);
             if (!card) return;
-
-            if (card.cardType === 'LEADER') {
-                setLeader(card);
-            } else {
-                addCardToDeck(card);
-            }
+            card.cardType === 'LEADER' ? setLeader(card) : addCardToDeck(card);
         }
 
         function setLeader(newLeader) {
-            if (leader && leader.id === newLeader.id) { 
-                leader = null;
-            } else {
-                leader = newLeader;
-            }
+            leader = (leader?.id === newLeader.id) ? null : newLeader;
             validateDeckColors();
             applyFilters();
             updateDeckView();
@@ -484,57 +351,36 @@
         function addCardToDeck(card) {
             const currentCount = deck.get(card.id) || 0;
             const totalDeckSize = Array.from(deck.values()).reduce((sum, count) => sum + count, 0);
-
-            if (totalDeckSize >= DECK_SIZE) {
-                return;
+            if (totalDeckSize < DECK_SIZE && currentCount < MAX_COPIES) {
+                deck.set(card.id, currentCount + 1);
+                updateDeckView();
             }
-            if (currentCount >= MAX_COPIES) {
-                return;
-            }
-
-            deck.set(card.id, currentCount + 1);
-            updateDeckView();
         }
 
         function changeCardQuantity(cardId, change) {
-            const currentCount = deck.get(cardId) || 0;
-            const newCount = currentCount + change;
-
-            if (newCount > MAX_COPIES) {
-                return;
-            }
-
-            if (newCount <= 0) {
-                deck.delete(cardId);
-            } else {
-                deck.set(cardId, newCount);
-            }
+            const newCount = (deck.get(cardId) || 0) + change;
+            if (newCount <= 0) deck.delete(cardId);
+            else if (newCount <= MAX_COPIES) deck.set(cardId, newCount);
             updateDeckView();
         }
         
         function clearDeck() {
-            if (confirm("Are you sure you want to clear the entire deck?")) {
-                deck.clear();
-                leader = null;
-                document.getElementById('deckName').value = '';
-                applyFilters();
-                updateDeckView();
-            }
+            deck.clear();
+            leader = null;
+            applyFilters();
+            updateDeckView();
         }
 
         function validateDeckColors() {
             if (!leader) return;
             const leaderColors = leader.color.split('/');
-            for (const [cardId, quantity] of deck.entries()) {
+            for (const [cardId] of deck.entries()) {
                 const card = allCards.find(c => c.id === cardId);
-                const cardColors = card.color.split('/');
-                if (!cardColors.some(cc => leaderColors.includes(cc))) {
+                if (!card.color.split('/').some(cc => leaderColors.includes(cc))) {
                     deck.delete(cardId);
                 }
             }
         }
-
-        // --- DECK AREA VIEW UPDATES ---
 
         function updateDeckView() {
             updateLeaderView();
@@ -544,91 +390,62 @@
         
         function updateLeaderView() {
             const leaderImageEl = document.getElementById('leaderImage');
-            if (leader) {
-                const imagePath = getImagePath(leader);
-                leaderImageEl.innerHTML = `<img src="${imagePath}" alt="${leader.name}">`;
-            } else {
-                leaderImageEl.innerHTML = 'LEADER';
-            }
+            leaderImageEl.innerHTML = leader ? `<img src="${getImagePath(leader)}" alt="${leader.name}">` : 'LEADER';
         }
 
         function updateDeckListView() {
-            const characterList = document.getElementById('characterList');
-            const eventList = document.getElementById('eventList');
-            const stageList = document.getElementById('stageList');
+            const lists = { CHARACTER: '', EVENT: '', STAGE: '' };
+            const counts = { CHARACTER: 0, EVENT: 0, STAGE: 0 };
             
-            characterList.innerHTML = '';
-            eventList.innerHTML = '';
-            stageList.innerHTML = '';
-            
-            let charCount = 0, eventCount = 0, stageCount = 0;
-
             const sortedDeck = Array.from(deck.keys())
                 .map(id => allCards.find(c => c.id === id))
-                .sort((a, b) => (a.cost || 0) - (b.cost || 0) || a.name.localeCompare(b.name));
+                .sort((a, b) => (a.cost ?? 0) - (b.cost ?? 0) || a.name.localeCompare(b.name));
 
             sortedDeck.forEach(card => {
                 const quantity = deck.get(card.id);
-                const cardEl = createDeckCardElement(card, quantity);
-
-                if (card.cardType === 'CHARACTER') {
-                    characterList.appendChild(cardEl);
-                    charCount += quantity;
-                } else if (card.cardType === 'EVENT') {
-                    eventList.appendChild(cardEl);
-                    eventCount += quantity;
-                } else if (card.cardType === 'STAGE') {
-                    stageList.appendChild(cardEl);
-                    stageCount += quantity;
-                }
+                lists[card.cardType] += createDeckCardElement(card, quantity);
+                counts[card.cardType] += quantity;
             });
 
-            document.getElementById('characterCount').textContent = charCount;
-            document.getElementById('eventCount').textContent = eventCount;
-            document.getElementById('stageCount').textContent = stageCount;
+            document.getElementById('characterList').innerHTML = lists.CHARACTER;
+            document.getElementById('eventList').innerHTML = lists.EVENT;
+            document.getElementById('stageList').innerHTML = lists.STAGE;
+            document.getElementById('characterCount').textContent = counts.CHARACTER;
+            document.getElementById('eventCount').textContent = counts.EVENT;
+            document.getElementById('stageCount').textContent = counts.STAGE;
         }
 
         function createDeckCardElement(card, quantity) {
-            const el = document.createElement('div');
-            el.className = 'deck-card';
-            
             const imagePath = getImagePath(card);
-            const colors = card.color.split('/');
-            const primaryColor = colors[0].toLowerCase();
+            const primaryColor = card.color.split('/')[0].toLowerCase();
             const costColorStyle = `background: var(--${primaryColor}-color);`;
-
-            el.innerHTML = `
-                <div class="deck-card-image">
-                    <img src="${imagePath}" loading="lazy" onerror="this.style.display='none'; this.parentElement.style.border='1px solid #ccc';">
-                </div>
-                <div class="cost-color" style="${costColorStyle}">${card.cost ?? '0'}</div>
-                <div class="card-name">${card.name}</div>
-                <div class="quantity-controls">
-                    <button class="quantity-btn minus-btn" data-card-id="${card.id}">-</button>
-                    <span>${quantity}</span>
-                    <button class="quantity-btn plus-btn" data-card-id="${card.id}">+</button>
-                </div>
-            `;
-            return el;
+            return `
+                <div class="deck-card">
+                    <div class="deck-card-image"><img src="${imagePath}" loading="lazy" onerror="this.style.display='none';"></div>
+                    <div class="cost-color" style="${costColorStyle}">${card.cost ?? '0'}</div>
+                    <div class="card-name">${card.name}</div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn minus-btn" data-card-id="${card.id}">-</button>
+                        <span>${quantity}</span>
+                        <button class="quantity-btn plus-btn" data-card-id="${card.id}">+</button>
+                    </div>
+                </div>`;
         }
 
         function updateStatsView() {
-            // Card Count
             const totalCount = Array.from(deck.values()).reduce((sum, count) => sum + count, 0);
             const countEl = document.getElementById('deckCardCount');
             countEl.textContent = `Total Cards: ${totalCount} / ${DECK_SIZE}`;
             countEl.style.color = totalCount === DECK_SIZE ? 'var(--green-color)' : (totalCount > DECK_SIZE ? 'var(--red-color)' : 'inherit');
             
-            // Cost Curve
-            const costCurve = new Array(11).fill(0); // 0 to 10+
+            const costCurve = new Array(11).fill(0);
             deck.forEach((quantity, cardId) => {
                 const card = allCards.find(c => c.id === cardId);
                 if (card && card.cost !== null && card.cardType !== 'STAGE') {
-                    const costIndex = Math.min(card.cost, 10);
-                    costCurve[costIndex] += quantity;
+                    costCurve[Math.min(card.cost, 10)] += quantity;
                 }
             });
-
+            
             const curveContainer = document.getElementById('costCurve');
             const labelsContainer = document.querySelector('.cost-curve-labels');
             curveContainer.innerHTML = '';
@@ -636,54 +453,56 @@
             const maxCount = Math.max(...costCurve, 1);
 
             costCurve.forEach((count, index) => {
-                const bar = document.createElement('div');
-                bar.className = 'cost-bar';
-                const heightPercentage = (count / maxCount) * 100;
-                bar.style.height = `${heightPercentage}%`;
-                if(count > 0) {
-                     bar.innerHTML = `<span class="bar-count">${count}</span>`;
-                }
-                curveContainer.appendChild(bar);
-                
-                const label = document.createElement('div');
-                label.className = 'cost-label';
-                label.style.flex = '1';
-                label.textContent = index === 10 ? '10+' : index;
-                labelsContainer.appendChild(label);
+                const height = (count / maxCount) * 100;
+                curveContainer.innerHTML += `<div class="cost-bar" style="height: ${height}%;">${count > 0 ? `<span class="bar-count">${count}</span>` : ''}</div>`;
+                labelsContainer.innerHTML += `<div class="cost-label" style="flex: 1;">${index === 10 ? '10+' : index}</div>`;
             });
         }
         
-        // --- EVENT LISTENERS ---
         function setupEventListeners() {
             document.getElementById('searchBar').addEventListener('input', applyFilters);
-            document.querySelectorAll('.color-chip').forEach(chip => {
-                chip.addEventListener('click', () => {
-                    const color = chip.dataset.color;
-                    selectedColors.has(color) ? selectedColors.delete(color) : selectedColors.add(color);
-                    chip.classList.toggle('active');
-                    applyFilters();
-                });
-            });
-            
             document.getElementById('cardsContainer').addEventListener('click', handleCardClick);
+            document.getElementById('clearDeckBtn').addEventListener('click', clearDeck);
             
             document.getElementById('deckListContainer').addEventListener('click', (e) => {
                 const cardId = e.target.dataset.cardId;
                 if (!cardId) return;
-
-                if (e.target.classList.contains('minus-btn')) {
-                    changeCardQuantity(cardId, -1);
-                } else if (e.target.classList.contains('plus-btn')) {
-                    const card = allCards.find(c => c.id === cardId);
-                    addCardToDeck(card);
-                }
+                if (e.target.classList.contains('minus-btn')) changeCardQuantity(cardId, -1);
+                else if (e.target.classList.contains('plus-btn')) addCardToDeck(allCards.find(c => c.id === cardId));
             });
 
-            document.getElementById('clearDeckBtn').addEventListener('click', clearDeck);
+            const toggleFilter = (chip, collection) => {
+                const value = chip.dataset[Object.keys(chip.dataset)[0]];
+                collection.has(value) ? collection.delete(value) : collection.add(value);
+                chip.classList.toggle('active');
+                applyFilters();
+            };
+
+            const togglePropertyFilter = (chip) => {
+                const property = chip.dataset.property;
+                const state = propertyFilterStates.get(property);
+                chip.classList.remove('active', 'inverse');
+                if (state === 'has') {
+                    propertyFilterStates.set(property, 'no');
+                    chip.classList.add('inverse');
+                } else if (state === 'no') {
+                    propertyFilterStates.delete(property);
+                } else {
+                    propertyFilterStates.set(property, 'has');
+                    chip.classList.add('active');
+                }
+                applyFilters();
+            };
+
+            document.querySelectorAll('.color-chip').forEach(c => c.addEventListener('click', () => toggleFilter(c, selectedColors)));
+            document.querySelectorAll('.cost-chip').forEach(c => c.addEventListener('click', () => toggleFilter(c, selectedCosts)));
+            document.querySelectorAll('.type-chip').forEach(c => c.addEventListener('click', () => toggleFilter(c, selectedTypes)));
+            document.querySelectorAll('.counter-chip').forEach(c => c.addEventListener('click', () => toggleFilter(c, selectedCounters)));
+            document.querySelectorAll('.property-chip').forEach(c => c.addEventListener('click', () => togglePropertyFilter(c)));
         }
 
-        // --- START ---
         document.addEventListener('DOMContentLoaded', initializeDeckBuilder);
     </script>
 </body>
 </html>
+
