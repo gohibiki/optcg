@@ -112,16 +112,11 @@
         
         .searcher-analysis { margin-top: 20px; }
         .searcher-analysis h3 { font-size: 16px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
-        .searcher-item { display: flex; gap: 15px; margin-bottom: 15px; align-items: flex-start; }
-        .searcher-image { width: 75px; flex-shrink: 0; }
-        .searcher-image img { width: 100%; height: auto; border-radius: 5px; }
-        .searcher-table-container { flex-grow: 1; }
         .searcher-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .searcher-table th, .searcher-table td { border: 1px solid var(--border-color); padding: 4px; text-align: center; }
+        .searcher-table th, .searcher-table td { border: 1px solid var(--border-color); padding: 5px; text-align: center; }
         .searcher-table th { background-color: #f2f2f2; font-weight: bold; }
-        .searcher-info { font-size: 12px; margin-bottom: 5px; }
-        .searcher-info strong { color: var(--primary-color); }
-        .searcher-table .prob-label { font-size: 10px; font-weight: bold; }
+        .searcher-table .prob-label { font-weight: bold; text-align: left; font-size: 11px; }
+
     </style>
 </head>
 <body>
@@ -401,38 +396,49 @@
             document.getElementById('costCurve').innerHTML = costCurve.map((c, i) => `<div class="cost-bar" style="height: ${(c / maxCount) * 100}%;">${c > 0 ? `<span class="bar-count">${c}</span>` : ''}</div>`).join('');
             document.getElementById('costCurve-labels').innerHTML = costCurve.map((_, i) => `<div class="cost-label" style="flex: 1;">${i === 10 ? '10+' : i}</div>`).join('');
 
-            let searcherHTML = '';
-            const uniqueCardIdsInDeck = [...deck.keys()];
-
-            for (const cardId of uniqueCardIdsInDeck) {
+            // --- REVISED Searcher Analysis ---
+            const searcherGroups = new Map();
+            deck.forEach((_, cardId) => {
                 const card = allCards.find(c => c.id === cardId);
-                if (!card) continue;
-
+                if (!card) return;
                 const searcherData = parseSearcherEffect(card.effect);
                 if (searcherData) {
-                    const targets = findSearcherTargets(searcherData.types);
-                    if (targets.count === 0) continue;
+                    const key = searcherData.types.sort().join('/');
+                    if (!searcherGroups.has(key)) {
+                        searcherGroups.set(key, { 
+                            look: searcherData.look, 
+                            types: searcherData.types, 
+                            targets: findSearcherTargets(searcherData.types).count
+                        });
+                    }
+                }
+            });
 
-                    let tableHTML = '<thead><tr><th>Turn</th>' + Array.from({length: 10}, (_, i) => `<th>${i+1}</th>`).join('') + '</tr></thead>';
-                    tableHTML += `<tbody><tr><td class="prob-label">${searcherData.types.join('/')}</td>`;
-                    
+            let analysisHTML = '';
+            if (searcherGroups.size > 0) {
+                let tableBodyHTML = '';
+                searcherGroups.forEach((group, key) => {
+                    if (group.targets === 0) return;
+                    tableBodyHTML += `<tr><td class="prob-label">${group.types.join('/')} (${group.targets} targets)</td>`;
                     for (let turn = 1; turn <= 10; turn++) {
                         const deckSizeAfterDraw = 50 - (5 + (turn - 1));
-                        const prob = probAtLeastOne(targets.count, deckSizeAfterDraw, searcherData.look);
-                        tableHTML += `<td>${(prob * 100).toFixed(0)}%</td>`;
+                        const prob = probAtLeastOne(group.targets, deckSizeAfterDraw, group.look);
+                        tableBodyHTML += `<td>${(prob * 100).toFixed(0)}%</td>`;
                     }
-                    tableHTML += '</tr></tbody>';
+                    tableBodyHTML += '</tr>';
+                });
 
-                    searcherHTML += `<div class="searcher-item">
-                        <div class="searcher-image"><img src="${getImagePath(card)}" alt="${card.name}"></div>
-                        <div class="searcher-table-container">
-                            <table class="searcher-table">${tableHTML}</table>
-                        </div>
-                    </div>`;
+                if (tableBodyHTML) {
+                    analysisHTML = `<h3>Searcher Analysis</h3>
+                                  <table class="searcher-table">
+                                      <thead><tr><th>Search Target (Hits)</th>` +
+                                      Array.from({length: 10}, (_, i) => `<th>Turn ${i+1}</th>`).join('') +
+                                      `</tr></thead>
+                                      <tbody>${tableBodyHTML}</tbody>
+                                  </table>`;
                 }
             }
-            const analysisContainer = document.getElementById('searcherAnalysis');
-            analysisContainer.innerHTML = searcherHTML ? `<h3>Searcher Analysis</h3>${searcherHTML}` : '';
+            document.getElementById('searcherAnalysis').innerHTML = analysisHTML;
         }
 
         function parseSearcherEffect(effectText) {
